@@ -1,47 +1,43 @@
 #include <bits/stdc++.h>
-using namespace std;
-typedef long long ll;
-template <typename T> class SparseTable {
-    using VT = vector<T>;
-    using VVT = vector<VT>;
-    using func_type = function<T(const T &, const T &)>;
+using i64 = long long;
 
-    VVT ST;
-
-    static T default_func(const T &t1, const T &t2) { return max(t1, t2); }
-
-    func_type op;
-
-  public:
-    SparseTable(const vector<T> &v, func_type _func = default_func) {
-        op = _func;
-        int len = v.size(), l1 = ceil(__lg(len)) + 1;
-        ST.assign(len, VT(l1, 0));
-        for (int i = 0; i < len; ++i) {
-            ST[i][0] = v[i];
-        }
-        for (int j = 1; j < l1; ++j) {
-            int pj = (1 << (j - 1));
-            for (int i = 0; i + pj < len; ++i) {
-                ST[i][j] = op(ST[i][j - 1], ST[i + (1 << (j - 1))][j - 1]);
+template <typename T, typename Func = std::function<T(const T &, const T &)>>
+struct ST {
+    ST(
+        const std::vector<T> &v,
+        Func func = [](const T &a, const T &b) { return std::max(a, b); })
+        : func(std::move(func)) {
+        int k = std::__lg(v.size());
+        st = std::vector<std::vector<T>>(k + 1, std::vector<T>(v.size()));
+        st[0] = v;
+        for (int i = 0; i < k; ++i) {
+            for (int j = 0; j + (1 << (i + 1)) - 1 < v.size(); ++j) {
+                st[i + 1][j] = this->func(st[i][j], st[i][j + (1 << i)]);
             }
         }
     }
-
-    T query(int l, int r) {
-        int lt = r - l + 1;
-        int q = floor(__lg(lt));
-        return op(ST[l][q], ST[r - (1 << q) + 1][q]);
+    T range(int l, int r) {
+        int t = std::__lg(r - l + 1);
+        return func(st[t][l], st[t][r + 1 - (1 << t)]);
     }
+    std::vector<std::vector<T>> st;
+    Func func;
 };
+
 int main() {
-    ll n;
-    cin >> n;
-    vector<ll> a(n + 1, 0);
-    for (ll i = 1; i <= n; i++) {
-        cin >> a[i];
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+    int n, q;
+    std::cin >> n >> q;
+    std::vector<int> v(n + 1);
+    for (int i = 1; i <= n; ++i) {
+        std::cin >> v[i];
     }
-    SparseTable<ll> st(a);
-    cout << st.query(2, 3) << endl;
+    ST<int> st(v);
+    while (q--) {
+        int l, r;
+        std::cin >> l >> r;
+        std::cout << st.range(l, r) << '\n';
+    }
     return 0;
 }

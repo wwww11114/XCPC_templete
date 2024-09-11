@@ -1,52 +1,37 @@
 #include <bits/stdc++.h>
 using namespace std;
 typedef long long i64;
-template <typename T> class SparseTable {
-    using VT = vector<T>;
-    using VVT = vector<VT>;
-    using func_type = function<T(const T &, const T &)>;
-    VT v;
-    VVT ST;
-
-    static T default_func(const T &t1, const T &t2) { return max(t1, t2); }
-
-    func_type op;
-
-  public:
-    void init(const vector<T> &v_, func_type _func = default_func) {
+struct SparseTable {
+    SparseTable() {}
+    vector<int> v;
+    vector<vector<int>> st;
+    void init(vector<int> &v_) {
         v = v_;
-        int len = v.size(), l1 = ceil(log2(len)) + 1;
-        ST.assign(len, VT(l1, 0));
-        for (int i = 0; i < len; ++i) {
-            ST[i][0] = i;
-        }
-        for (int j = 1; j < l1; ++j) {
-            int pj = (1 << (j - 1));
-            for (int i = 0; i + pj < len; ++i) {
-                if (v[ST[i][j - 1]] < v[ST[i + (1 << (j - 1))][j - 1]]) {
-                    ST[i][j] = ST[i][j - 1];
-                } else {
-                    ST[i][j] = ST[i + (1 << (j - 1))][j - 1];
-                }
+        int k = __lg(v.size());
+        st = vector<vector<int>>(k + 1, vector<int>(v.size()));
+        iota(st[0].begin(), st[0].end(), 0);
+        for (int i = 0; i < k; ++i) {
+            for (int j = 0; j + (1 << (i + 1)) - 1 < v.size(); ++j) {
+                if (v[st[i][j]] < v[st[i][j + (1 << i)]])
+                    st[i + 1][j] = st[i][j];
+                else
+                    st[i + 1][j] = st[i][j + (1 << i)];
             }
         }
     }
-
-    T query_id(int l, int r) {
-        int lt = r - l + 1;
-        int q = floor(log2(lt));
-        if (v[ST[l][q]] < v[ST[r - (1 << q) + 1][q]]) {
-            return ST[l][q];
-        } else {
-            return ST[r - (1 << q) + 1][q];
-        }
+    int query_id(int l, int r) {
+        int t = __lg(r - l + 1);
+        if (v[st[t][l]] < v[st[t][r + 1 - (1 << t)]])
+            return st[t][l];
+        else
+            return st[t][r + 1 - (1 << t)];
     }
 };
 struct Euler_tours {
     int n, cnt = 0;
     vector<vector<int>> graph;
     vector<int> et_dep, id, et;
-    SparseTable<int> st;
+    SparseTable st;
     Euler_tours(int n)
         : n(n), graph(n + 1), id(n + 1), et_dep(2 * n), et(2 * n) {}
 

@@ -1,7 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-template <typename T> 
-class SegTreeLazyRangeSet {
+template <typename T> class SegTreeLazyRangeSet {
     vector<T> tree, lazy;
     vector<T> *arr;
     int n, root, n4, end;
