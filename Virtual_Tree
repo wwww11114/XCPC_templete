@@ -1,0 +1,173 @@
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long i64;
+struct SparseTable {
+    vector<int> v;
+    vector<vector<int>> st;
+    SparseTable() = default;
+
+    void init(vector<int> &v_) {
+        v = v_;
+        int k = __lg(v.size());
+        st = vector<vector<int>>(k + 1, vector<int>(v.size()));
+        iota(st[0].begin(), st[0].end(), 0);
+        for (int i = 0; i < k; ++i) {
+            for (int j = 0; j + (1 << (i + 1)) - 1 < v.size(); ++j) {
+                if (v[st[i][j]] < v[st[i][j + (1 << i)]])
+                    st[i + 1][j] = st[i][j];
+                else
+                    st[i + 1][j] = st[i][j + (1 << i)];
+            }
+        }
+    }
+
+    int query_id(int l, int r) {
+        int t = __lg(r - l + 1);
+        if (v[st[t][l]] < v[st[t][r + 1 - (1 << t)]])
+            return st[t][l];
+        else
+            return st[t][r + 1 - (1 << t)];
+    }
+};
+struct Virtual_Tree {
+    int n, cnt = 0;
+    vector<vector<int>> tree;
+    vector<int> et_dep, id, et;
+    SparseTable st;
+    Virtual_Tree() = default;
+
+    Virtual_Tree(int n) : n(n), tree(n + 1), id(n + 1), et_dep(2 * n), et(2 * n) {}
+
+    void add_edg(int u, int v) {
+        tree[u].push_back(v);
+        tree[v].push_back(u);
+    }
+
+    void dfs(int u, int fa, int dep) {
+        et_dep[++cnt] = dep;
+        et[cnt] = u;
+        id[u] = cnt;
+        for (auto v : tree[u]) {
+            if (v != fa) {
+                dfs(v, u, dep + 1);
+                et_dep[++cnt] = dep;
+                et[cnt] = u;
+            }
+        }
+        return;
+    }
+
+    void init(int root = 1) {
+        dfs(root, 0, 1);
+        st.init(et_dep);
+    }
+
+    int lca(int u, int v) {
+        int idu = id[u];
+        int idv = id[v];
+        if (idu > idv) {
+            swap(idu, idv);
+        }
+        int idlca = st.query_id(idu, idv);
+        return et[idlca];
+    }
+
+    bool cmp(int u, int v) { return id[u] < id[v]; }
+    // 0下标
+    map<int, vector<int>> build(vector<int> &v) {
+        sort(v.begin(), v.end(), cmp);
+        for (int i = 1; i < v.size(); ++i) {
+            v.push_back(lca(v[i - 1], v[i]));
+        }
+        sort(v.begin(), v.end(), cmp);
+        v.erase(unique(v.begin(), v.end()), v.end());
+        map<int, vector<int>> gra;
+        for (int i = 1; i < v.size(); ++i) {
+            gra[lca(v[i - 1], v[i])].push_back(v[i]);
+            gra[v[i]].push_back(lca(v[i - 1], v[i]));
+        }
+        return gra;
+    }
+};
+
+
+void solve() {
+    i64 n, q;
+    cin >> n >> q;
+    vector<vector<int>> gra(n + 1);
+    vector<i64> ans(n + 1, 1e18);
+    map<i64, vector<int>> mp;
+    Virtual_Tree vt(n);
+    for (i64 i = 1; i < n; ++i) {
+        i64 num;
+        cin >> num;
+        set<i64> st;
+        for (i64 j = 1; j <= num; ++j) {
+            i64 x;
+            cin >> x;
+            if (st.count(x)) {
+                ans[i] = 0;
+            }
+            st.insert(x);
+            mp[x].push_back(i);
+        }
+    }
+    for (i64 i = 1; i < n; ++i) {
+        i64 u, v;
+        cin >> u >> v;
+        vt.add_edg(u, v);
+        gra[u].push_back(v);
+        gra[v].push_back(u);
+    }
+    vt.init();
+    vector<i64> dep(n + 1);
+    auto dfs = [&](auto &&dfs, i64 u, i64 fa) -> void {
+        for (auto v : gra[u]) {
+            if (v == fa) {
+                continue;
+            }
+            dep[v] = dep[u] + 1;
+            dfs(dfs, v, u);
+        }
+    };
+    for (auto [val, v] : mp) {
+        map<int, vector<int>> ngra = vt.build(v);
+        for (auto [u, vec] : ngra) {
+            for (auto v : vec) {
+                ans[u] = min(ans[u], abs(dep[u] - dep[v]));
+            }
+        }
+    }
+    priority_queue<pair<i64, i64>, vector<pair<i64, i64>>, greater<pair<i64, i64>>> pq;
+    for (i64 i = 1; i < n; ++i) {
+        pq.push({ans[i], i});
+    }
+    while(!pq.empty()) {
+        auto [val, u] = pq.top();
+        pq.pop();
+        if (ans[u] > val) {
+            for (auto v : gra[u]) {
+                if (ans[v] > val + 1) {
+                    ans[v] = val + 1;
+                    pq.push({ans[v], v});
+                }
+            }
+        }
+    }
+    while (q--) {
+        i64 x;
+        cin >> x;
+        cout << ans[x] << '\n';
+    }
+    return;
+}
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(0), cout.tie(0);
+    i64 T = 1;
+    // cin >> T;
+    while (T--) {
+        solve();
+    }
+    return 0;
+}
