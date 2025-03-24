@@ -1,12 +1,13 @@
 #include <bits/stdc++.h>
 using namespace std;
 // 有向图欧拉回路or通路
-struct Directed_Euler {
+struct Euler {
     vector<int> in, out;     // 存储入,出度
     vector<vector<int>> gra; // 存储图
+    const int n;
     // 初始化
-    Directed_Euler() = default;
-    Directed_Euler(int n) : gra(n), in(n), out(n) {}
+    Euler() = default;
+    Euler(int n) : n(n), gra(n), in(n), out(n) {}
     // 添加边
     void add_edge(int u, int v) {
         gra[u].push_back(v);
@@ -15,7 +16,6 @@ struct Directed_Euler {
     }
     // 判断是否存在欧拉通路and返回起点
     int is_semiEuler() {
-        int n = gra.size() - 1;
         int odd = 0, neodd = 0, start = 0;
         for (int i = 1; i <= n; i++) {
             if (out[i] - in[i] == 1) {
@@ -37,7 +37,6 @@ struct Directed_Euler {
     }
     // 判断是否存在欧拉回路
     bool is_Euler() {
-        int n = gra.size() - 1;
         for (int i = 1; i <= n; i++) {
             if (in[i] != out[i])
                 return false;
@@ -47,15 +46,15 @@ struct Directed_Euler {
     // 求解欧拉回路or通路
     vector<int> Euler_tour(int start) {
         vector<int> tour;
-        function<void(int)> dfs = [&](int u) {
+        auto dfs = [&](auto dfs, int u) -> void {
             while (!gra[u].empty()) {
                 int v = gra[u].back();
                 gra[u].pop_back();
-                dfs(v);
+                dfs(dfs, v);
             }
             tour.push_back(u);
         };
-        dfs(start);
+        dfs(dfs, start);
         return tour; // 返回的是逆序的欧拉回路or通路
     }
 };

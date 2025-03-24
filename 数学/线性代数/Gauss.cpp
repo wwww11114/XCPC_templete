@@ -3,8 +3,8 @@ using namespace std;
 typedef long long i64;
 typedef long double f64;
 constexpr f64 eps = DBL_EPSILON;
-vector<f64> Gauss(vector<vector<f64>> &a) {
-    bool flag = 0;
+vector<f64> Gauss(vector<vector<f64>> &a, int &flag) {
+    // bool flag = 0;
     int n = a.size() - 1;
     vector<bool> free(n + 1);
     vector<f64> res(n + 1);
@@ -59,7 +59,9 @@ void solve() {
             cin >> a[i][j];
         }
     }
-    vector<f64> res = Gauss(a);
+    int k = 0;
+
+    vector<f64> res = Gauss(a, 1);
     if (res[0] == -1) {
         cout << "-1\n";
         return;

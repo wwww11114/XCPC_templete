@@ -8,33 +8,28 @@ struct SegmentTree {
         Node *r = nullptr;
         Info info;
     };
-    SegmentTree(int n) : n(n) {}
-    ~SegmentTree() { deleteNodes(root); }
+    SegmentTree(i64 n) : n(n) {}
 
     void pushup(Node *id) {
-        id->info = (id->l == nullptr ? Info() : id->l->info) +
-            (id->r == nullptr ? Info() : id->r->info);
+        id->info = (id->l == nullptr ? Info() : id->l->info) + (id->r == nullptr ? Info() : id->r->info);
     }
-    void add(int pos, const Info &val) { update(pos, query(pos) + val); }
-    void update(int pos, const Info &val) { update(root, 1, n, pos, val); }
-    Info query(int pos) { return rangeQuery(pos, pos); }
-    Info rangeQuery(int l, int r) { return rangeQuery(root, 1, n, l, r); }
-
+    void add(i64 pos, const Info &val) { update(pos, query(pos) + val); }
+    void update(i64 pos, const Info &val) { update(root, 1, n, pos, val); }
+    Info query(i64 pos) { return rangeQuery(pos, pos); }
+    Info rangeQuery(i64 l, i64 r) { return rangeQuery(root, 1, n, l, r); }
     void merge(SegmentTree &other) {
-        assert(n == other.n);
         root = mergeNodes(root, other.root, 1, n);
-        other.root = nullptr;
     }
 
 private:
-    void update(Node *&id, int l, int r, int pos, const Info &val) {
+    void update(Node *&id, i64 l, i64 r, i64 pos, const Info &val) {
         if (id == nullptr)
             id = new Node();
         if (l == r) {
             id->info = val;
             return;
         }
-        int mid = (l + r) / 2;
+        i64 mid = (l + r) / 2;
         if (pos <= mid) {
             update(id->l, l, mid, pos, val);
         } else {
@@ -43,43 +38,37 @@ private:
         pushup(id);
     }
 
-    Info rangeQuery(Node *&id, int l, int r, int x, int y) {
+    Info rangeQuery(Node *&id, i64 l, i64 r, i64 x, i64 y) {
         if (y < l || x > r || id == nullptr)
             return Info();
         if (x <= l && r <= y) {
             return id->info;
         }
-        int mid = (l + r) / 2;
+        i64 mid = (l + r) / 2;
         return rangeQuery(id->l, l, mid, x, y) + rangeQuery(id->r, mid + 1, r, x, y);
     }
 
-    Node *mergeNodes(Node *a, Node *b, int l, int r) {
-        if (!a)
+    Node *mergeNodes(Node *a, Node *b, i64 l, i64 r) {
+        if (a == nullptr) {
             return b;
-        if (!b)
+        }
+        if (b == nullptr) {
             return a;
+        }
         if (l == r) {
             a->info = a->info + b->info;
             delete b;
+        } else {
+            i64 mid = (l + r) / 2;
+            a->l = mergeNodes(a->l, b->l, l, mid);
+            a->r = mergeNodes(a->r, b->r, mid + 1, r);
+            pushup(a);
+            delete b;
             return a;
         }
-        int mid = (l + r) / 2;
-        a->l = mergeNodes(a->l, b->l, l, mid);
-        a->r = mergeNodes(a->r, b->r, mid + 1, r);
-        pushup(a);
-        delete b;
         return a;
     }
-
-    void deleteNodes(Node *node) {
-        if (!node)
-            return;
-        deleteNodes(node->l);
-        deleteNodes(node->r);
-        delete node;
-    }
-
-    int n;
+    i64 n;
     Node *root = nullptr;
 };
 
@@ -97,6 +86,11 @@ Info operator+(const Info &x, const Info &y) {
     return res;
 }
 
+Info operator^(const Info &x, const Info &y) {
+    Info res;
+    res.val = x.val + y.val;
+    return res;
+}
 void solve() {
     int n, q;
     std::cin >> n >> q;

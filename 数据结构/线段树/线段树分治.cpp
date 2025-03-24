@@ -23,19 +23,14 @@ struct DSU {
             his.pop();
             x = y;
         }
-        return;
     }
-    void add_edge(int x, int y) {
-        merge(x, y);
-        return;
-    }
+    void add_edge(int x, int y) { merge(x, y); }
 
     void change(int &x, int y) {
         if (x != y) {
             his.emplace(&x, x);
             x = y;
         }
-        return;
     }
     bool merge(int x, int y) {
         x = find(x), y = find(y);

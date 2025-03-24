@@ -11,28 +11,32 @@ struct Fenwick {
     Fenwick(int n) : n(n + 1), sum1(n + 2), sum2(n + 2) {}
     Fenwick(const vector<T> &v) : n(v.size()), sum1(n + 1), sum2(n + 1) {
         for (int i = 0; i <= n; i++) {
-            add(i, v[i]);
+            modify(i, v[i]);
         }
-    }    
-
-    void range_add(int l, int r, T x) { Add(l + 1, x), Add(r + 2, -x); }
-    void add(int p, T x) { return range_add(p, x, x); };
-    i64 range_ask(int l, int r) { return Ask(r + 1) - Ask(l); }
-    T ask(int p) { return range_ask(p, p); }
-private:
-    void Add(int p, T x) {
-        for (int i = p; i <= n; i += i & -i)
-            sum1[i] += x, sum2[i] += x * p;
     }
-    T Ask(int p) {
+    void update(int p, T x) { return modify(p, x - query(p)); }
+    void add(int p, T x) { return rangeAdd(p, x, x); };
+    void rangeAdd(int l, int r, T x) { modify(l + 1, x), modify(r + 2, -x); }
+    T query(int p) { return rangeQuery(p, p); }
+    i64 rangeQuery(int l, int r) { return ask(r + 1) - ask(l); }
+private:
+    void modify(int p, T x) {
+        for (int i = p; i <= n; i += i & -i) {
+            sum1[i] += x;
+            sum2[i] += x * p;
+        }
+        return;
+    }
+    T ask(int p) {
         T res = 0;
-        for (int i = p; i; i -= i & -i)
+        for (int i = p; i; i -= i & -i) {
             res += (p + 1) * sum1[i] - sum2[i];
+        }
         return res;
     }
 };
 // 单点修改，区间查询
-template <typename T> 
+template <typename T>
 struct Fenwick {
     vector<T> sum;
     const int n;
@@ -44,7 +48,7 @@ struct Fenwick {
             add(i, v[i]);
         }
     }
-    
+
     void add(int p, int x) { // 给位置p增加x
         p++;
         while (p <= n)

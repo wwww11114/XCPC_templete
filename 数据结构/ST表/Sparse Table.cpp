@@ -12,7 +12,7 @@ struct ST {
         st[0] = v;
         for (int i = 0; i < k; ++i) {
             for (int j = 0; j + (1 << (i + 1)) - 1 < v.size(); ++j) {
-                st[i + 1][j] = this->func(st[i][j], st[i][j + (1 << i)]);
+                st[i + 1][j] = 发unc(st[i][j], st[i][j + (1 << i)]);
             }
         }
     }
@@ -27,17 +27,6 @@ struct ST {
 int main() {
     std::ios::sync_with_stdio(false);
     std::cin.tie(nullptr);
-    int n, q;
-    std::cin >> n >> q;
-    std::vector<int> v(n + 1);
-    for (int i = 1; i <= n; ++i) {
-        std::cin >> v[i];
-    }
-    ST<int> st(v);
-    while (q--) {
-        int l, r;
-        std::cin >> l >> r;
-        std::cout << st.range(l, r) << '\n';
-    }
+    
     return 0;
 }

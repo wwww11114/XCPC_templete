@@ -212,16 +212,13 @@ public:
         a = i;
         return is;
     }
-    friend constexpr std::ostream &operator<<(std::ostream &os,
-        const DynModInt &a) {
+    friend constexpr std::ostream &operator<<(std::ostream &os, const DynModInt &a) {
         return os << a.val();
     }
-    friend constexpr bool operator==(const DynModInt &lhs,
-        const DynModInt &rhs) {
+    friend constexpr bool operator==(const DynModInt &lhs, const DynModInt &rhs) {
         return lhs.val() == rhs.val();
     }
-    friend constexpr std::strong_ordering operator<=>(const DynModInt &lhs,
-        const DynModInt &rhs) {
+    friend constexpr std::strong_ordering operator<=>(const DynModInt &lhs, const DynModInt &rhs) {
         return lhs.val() <=> rhs.val();
     }
 private:

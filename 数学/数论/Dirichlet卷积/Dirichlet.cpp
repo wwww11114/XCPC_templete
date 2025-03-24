@@ -2,7 +2,8 @@
 using namespace std;
 typedef long long i64;
 template <class T>
-constexpr T qpow(T a, i64 b, T res = 1ll) {
+constexpr T qpow(T a, i64 b) {
+    T res{}
     for (; b != 0; b /= 2, a *= a) {
         if (b & 1) {
             res *= a;
@@ -19,12 +20,14 @@ namespace Dirichlet {
     template <typename T>
     struct mul_func {
         vector<T> f;
-        int n;
-        mul_func(int n = N) : n(n), f(n + 1) {}
+        const int n;
+        mul_func(int n = N) : n(n), f(n + 1) {
+            f[1] = 1;
+        }
         T &operator[](int x) {
             return f[x];
         }
-        const T &operator[](int x) const {
+        T &operator[](int x) const {
             return f[x];
         }
         // Dirichlet卷积
@@ -149,7 +152,7 @@ namespace Dirichlet {
     // 约数和
     mul_func<i64> div_sum(int n = N) {
         mul_func<i64> ds(n);
-        vector<int> low(n + 1); // 维护每个数的最小质因数的最高幂次
+        vector<int> low(n + 1);
         ds[1] = 1;
         for (int i = 2; i <= n; i++) {
             if (!not_prime[i]) {
@@ -189,7 +192,7 @@ namespace Dirichlet {
     }
     // 幂函数
     template <typename T>
-    mul_func<T> Idk(int k = 1, int n = N) {
+    mul_func<T> Idk(i64 k = 1, int n = N) {
         mul_func<T> idk(n);
         for (int i = 1; i <= n; i++) {
             idk[i] = qpow(i, k);
@@ -215,7 +218,7 @@ int main() {
     auto id = Dirichlet::Id();
     auto idk = Dirichlet::Idk<i64>(2);
     auto e = Dirichlet::e();
-    cout << phi * qpow(u, 2, e) << '\n';
+    cout << phi * qpow(u, 2) << '\n';
     cout << u * mu << e << '\n';
     return 0;
 }

@@ -1,15 +1,15 @@
 #include <bits/stdc++.h>
 using namespace std;
 typedef long long i64;
-constexpr int W = 30;
+template <typename T>
 struct Trie {
-    vector<array<int, 2>> tree;
-    vector<int> cnt;
+    constexpr static int W = numeric_limits<T>::digits;
+    vector<array<T, 2>> tree;
     int tot = 0;
     Trie(int n) : tree(W * n + 1) {}
-    void insert(const i64 &x) {
+    void insert(const T &x) {
         int cur = 0;
-        for (int i = W; i >= 0; i--) {
+        for (int i = W - 1; i >= 0; i--) {
             int bit = (x >> i) & 1;
             if (!tree[cur][bit]) {
                 tree[cur][bit] = ++tot;

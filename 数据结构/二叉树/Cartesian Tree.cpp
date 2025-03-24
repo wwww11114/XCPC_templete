@@ -11,6 +11,7 @@ struct Cart_Tree {
     int n, root = 0;
     vector<Node> v;
     _Compare comp;
+    
     Cart_Tree() = default;
     Cart_Tree(const vector<T> &a) : n(a.size() - 1), v(n + 1) {
         stack<pair<T, int>> st;

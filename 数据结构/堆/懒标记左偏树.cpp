@@ -10,6 +10,7 @@ struct Leftist_Tree {
         Node *ls = nullptr, *rs = nullptr;
         Node(const T &x) : val(x) {}
     };
+    
     _Compare comp;
     size_t sz = 0;
     Node *root = nullptr;

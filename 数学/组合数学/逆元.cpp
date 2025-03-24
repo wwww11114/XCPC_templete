@@ -13,9 +13,7 @@ i64 qpow(i64 a, i64 b) {
     }
     return res;
 }
-i64 inv(i64 x) {
-    return qpow(x, mod - 2);
-}
+i64 inv(i64 x) { return qpow(x, mod - 2); }
 // O(n)求逆元
 vector<i64> inv(vector<i64> &a) {
     i64 n = a.size() - 1;

@@ -5,10 +5,9 @@ struct Euler {
     int id = 0;
     vector<int> edg;           // 存储边
     vector<vector<int>> gra; // 存储图
+    const int n;
     // 初始化
-    Euler(int n, int m) {
-        gra.resize(n + 1);
-    }
+    Euler(int n) : n(n), gra(n + 1) {}
     // 添加边
     void add_edge(int u, int v) {
         gra[u].push_back(id);
@@ -18,7 +17,6 @@ struct Euler {
     }
     // 判断是否存在欧拉通路and返回起点
     int is_semiEuler() {
-        int n = gra.size() - 1;
         int odd = 0, start = 0;
         for (int i = 1; i <= n; i++) {
             if (gra[i].size() & 1) {
@@ -34,7 +32,6 @@ struct Euler {
     }
     // 判断是否存在欧拉回路
     bool is_Euler() {
-        int n = gra.size() - 1;
         for (int i = 1; i <= n; i++) {
             if (gra[i].size() & 1)
                 return false;
@@ -44,7 +41,7 @@ struct Euler {
     // 求解欧拉回路or通路
     vector<int> Euler_tour(int start) {
         vector<int> tour;
-        function<void(int)> dfs = [&](int u) {
+        auto dfs = [&](auto dfs, int u) -> void {
             while (!gra[u].empty()) {
                 int i = gra[u].back();
                 gra[u].pop_back();
@@ -52,11 +49,11 @@ struct Euler {
                     continue;
                 int v = edg[i] ^ u;
                 edg[i] = -1;
-                dfs(v);
+                dfs(dfs, v);
             }
             tour.push_back(u);
         };
-        dfs(start);
+        dfs(dfs, start);
         return tour;
     }
 };

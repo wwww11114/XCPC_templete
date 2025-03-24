@@ -38,9 +38,13 @@ struct Euler_tours {
     Euler_tours() = default;
     Euler_tours(int n) : n(n), tree(n + 1), id(n + 1), et_dep(2 * n), et(2 * n) {}
 
-    void add_edg(int u, int v) {
+    void add_edge(int u, int v) {
         tree[u].push_back(v);
         tree[v].push_back(u);
+    }
+
+    void add_tree(const vector<vector<int>> &tree_) {
+        tree = tree_;
     }
 
     void dfs(int u, int fa, int dep) {
@@ -54,7 +58,6 @@ struct Euler_tours {
                 et[cnt] = u;
             }
         }
-        return;
     }
 
     void init(int root = 1) {
@@ -80,7 +83,7 @@ void solve() {
     for (i64 i = 1; i < n; i++) {
         i64 u, v;
         cin >> u >> v;
-        et.add_edg(u, v);
+        et.add_edge(u, v);
     }
     et.init(root);
     while (q--) {

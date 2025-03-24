@@ -14,23 +14,23 @@ struct Dinic {
     Dinic(int n) : n(n), gra(n + 1), dep(n + 1), cur(n + 1) {}
 
     void add_edge(int u, int v, T w) {
-        gra[u].push_back({v, m++});
+        gra[u].emplace_back(v, m++);
         edg.push_back(w);
-        gra[v].push_back({u, m++});
+        gra[v].emplace_back(u, m++);
         edg.push_back(0);
     }
     T work(int s, int t) {
         this->s = s, this->t = t;
         T ans = 0;
         while (bfs()) {
-            fill(cur.begin(), cur.end(), 0);
+            cur.assign(n + 1, 0);
             ans += dfs(s, INF);
         }
         return ans;
     }
 
     bool bfs() {
-        fill(dep.begin(), dep.end(), 0);
+        dep.assign(n + 1, 0);
         dep[s] = 1;
         queue<int> q;
         q.push(s);
@@ -46,6 +46,7 @@ struct Dinic {
         }
         return dep[t];
     }
+    
     T dfs(int u, T flow) {
         if (u == t) {
             return flow;

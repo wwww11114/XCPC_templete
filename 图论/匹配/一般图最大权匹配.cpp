@@ -1,3 +1,4 @@
+#include <bits/stdc++.h>
 template<class T>
 struct MaxAssignment {
 public:
@@ -40,7 +41,7 @@ public:
             int ex, ey;
             bool found = false;
             while (!found) {
-               hile (!que.empty() && !found) {
+                while (!que.empty() && !found) {
                     auto x = que.front();
                     que.pop();
                     for (int y = 0; y < ny; ++y) {
@@ -115,3 +116,6 @@ private:
     std::vector<int> xy, yx, p, slackx;
     std::vector<bool> visx, visy;
 };
+int main() {
+    std::cout << std::numeric_limits<unsigned int>::epsilon() << "\n";
+}

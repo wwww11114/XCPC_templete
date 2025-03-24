@@ -4,19 +4,18 @@ typedef long long i64;
 struct Trie {
     // 字符集大小
     constexpr static int H = 26;
-    constexpr static int N = 1e5;
     vector<array<int, H>> tree;
-    vector<int> cnt;
     int tot = 0;
     Trie() = default;
+    Trie(int n) : tree(n) {}
     void insert(const string &s) {
         int cur = 0;
         for (auto &c : s) {
-            int bit = c - 'a';
-            if (!tree[cur][bit]) {
-                tree[cur][bit] = ++tot;
+            int ch = c - 'a';
+            if (!tree[cur][ch]) {
+                tree[cur][ch] = ++tot;
             }
-            cur = tree[cur][bit];
+            cur = tree[cur][ch];
         }
     }
 };

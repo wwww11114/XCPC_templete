@@ -1,8 +1,9 @@
 #include <bits/stdc++.h>
 using namespace std;
 typedef long long i64;
-const int mod = 1e9 + 7;
-vector<i64> fac, inv;
+
+constexpr int mod = 1e9 + 7;
+
 i64 qpow(i64 a, i64 b) {
     i64 res = 1;
     while (b) {
@@ -14,22 +15,45 @@ i64 qpow(i64 a, i64 b) {
     }
     return res;
 }
-void init(int n) {
-    fac.resize(n + 1);
-    inv.resize(n + 1);
-    fac[0] = 1;
-    for (int i = 1; i <= n; i++) {
-        fac[i] = fac[i - 1] * i % mod;
+i64 inv(i64 a) { return qpow(a, mod - 2); }
+struct Comb {
+    vector<i64> _fac, _invfac;
+    int n;
+    Comb() : n(0), _fac(1, 1), _invfac(1, 1) {}
+    Comb(const int &n) : Comb() { init(n); }
+    void init(const int &m) {
+        if (m <= n) return;
+        _fac.resize(m + 1);
+        _invfac.resize(m + 1);
+        for (int i = n + 1; i <= m; i++) {
+            _fac[i] = _fac[i - 1] * i % mod;
+        }
+        _invfac[m] = inv(_fac[m]);
+        for (int i = m; i > n; i--) {
+            _invfac[i - 1] = _invfac[i] * i % mod;
+        }
+        n = m;
     }
-    inv[n] = qpow(fac[n], mod - 2);
-    for (int i = n - 1; i >= 0; i--) {
-        inv[i] = inv[i + 1] * (i + 1) % mod;
+    i64 fac(const int &m) {
+        if (m > n) init(2 * m);
+        return _fac[m];
     }
-}
-// m中选n个
-i64 C(i64 n, i64 m) {
-    if (n > m || m < 0 || n < 0) {
-        return 0;
+    i64 invfac(const int &m) {
+        if (m > n) init(2 * m);
+        return _invfac[m];
     }
-    return fac[m] * inv[m - n] % mod * inv[n] % mod;
+    i64 operator()(const int &n, const int &m) {
+        if (m < 0 || n < 0 || n < m) {
+            return 0;
+        }
+        return fac(n) * invfac(m) % mod * invfac(n - m) % mod;
+    }
+} comb;
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(0), cout.tie(0);
+    int n, m;
+    cin >> n >> m;
+    cout << comb(n + m, n) << '\n';
+    return 0;
 }

@@ -18,20 +18,21 @@ struct SegmentTree {
         };
         build(build, 1, 1, n);
     }
-    void pushup(int id) { info[id] = info[ls] + info[rs]; }
-    Info query(int pos) { return rangeQuery(pos, pos); }
+    void add(int pos, const Info &val) { update(pos, val, [](Info &x, const Info &y) { x = x + y; }); }
     void update(int pos, const Info &val) { update(1, 1, n, pos, val); }
+    Info query(int pos) { return rangeQuery(pos, pos); }
     Info rangeQuery(int l, int r) { return rangeQuery(1, 1, n, l, r); }
-    void update(int id, int l, int r, int pos, const Info &val) {
+    void pushup(int id) { info[id] = info[ls] + info[rs]; }
+    void update(int id, int l, int r, int pos, const Info &val, funciton<void(Info &, const Info &)> &func) {
         if (l == r) {
-            info[id] = val;
+            func(info[id], val);
             return;
         }
         int mid = (l + r) / 2;
         if (pos <= mid) {
-            update(ls, l, mid, pos, val);
+            update(ls, l, mid, pos, val, func);
         } else {
-            update(rs, mid + 1, r, pos, val);
+            update(rs, mid + 1, r, pos, val, func);
         }
         pushup(id);
     }
