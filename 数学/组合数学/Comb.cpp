@@ -20,8 +20,8 @@ struct Comb {
     vector<i64> _fac, _invfac;
     int n;
     Comb() : n(0), _fac(1, 1), _invfac(1, 1) {}
-    Comb(const int &n) : Comb() { init(n); }
-    void init(const int &m) {
+    Comb(int n) : Comb() { init(n); }
+    void init(int m) {
         if (m <= n) return;
         _fac.resize(m + 1);
         _invfac.resize(m + 1);
@@ -34,15 +34,15 @@ struct Comb {
         }
         n = m;
     }
-    i64 fac(const int &m) {
+    i64 fac(int m) {
         if (m > n) init(2 * m);
         return _fac[m];
     }
-    i64 invfac(const int &m) {
+    i64 invfac(int m) {
         if (m > n) init(2 * m);
         return _invfac[m];
     }
-    i64 operator()(const int &n, const int &m) {
+    i64 operator()(int n, int m) {
         if (m < 0 || n < 0 || n < m) {
             return 0;
         }
@@ -52,8 +52,8 @@ struct Comb {
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(0), cout.tie(0);
-    int n, m;
-    cin >> n >> m;
-    cout << comb(n + m, n) << '\n';
+    int n, k, m;
+    cin >> n >> k >> m;
+    cout << comb(n, k) * qpow(m, k) % mod << '\n';
     return 0;
 }

@@ -43,10 +43,9 @@ struct ODT {
             return;
         }
         auto it1 = st.lower_bound({ins, 0, 0});
-        auto it2 = it1;
-        it1--;
+        auto it2 = prev(it1);
         if (it2->v == it1->v) {
-            st.insert({it1->l, it2->r, it1->v});
+            st.insert({it2->l, it1->r, it1->v});
             st.erase(it1);
             st.erase(it2);
         }

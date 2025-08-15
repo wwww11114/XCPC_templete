@@ -51,7 +51,7 @@ struct SegmentTree {
     void rangeUpdate2(int to, int l, int r, int w) {
         rangeUpdate(root2, 1, n, l, r, to, w, addEgde2);
     }
-    void rangeUpdate(int id, int l, int r, int x, int y, int pos, int w,auto addEgde) {
+    void rangeUpdate(int id, int l, int r, int x, int y, int pos, int w, auto addEgde) {
         if (x <= l && r <= y) {
             addEgde(pos, nid(id), w);
             return;

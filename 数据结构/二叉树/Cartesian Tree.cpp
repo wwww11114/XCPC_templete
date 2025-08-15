@@ -11,15 +11,15 @@ struct Cart_Tree {
     int n, root = 0;
     vector<Node> v;
     _Compare comp;
-    
+
     Cart_Tree() = default;
     Cart_Tree(const vector<T> &a) : n(a.size() - 1), v(n + 1) {
-        stack<pair<T, int>> st;
+        stack<int> st;
         for (int i = 1; i <= n; i++) {
             v[i].val = a[i];
             while (!st.empty()) {
-                const auto &[val, pos] = st.top();
-                if (comp(a[i], val)) {
+                const auto &pos = st.top();
+                if (comp(a[i], a[pos])) {
                     v[i].ls = pos;
                     st.pop();
                 } else {
@@ -27,15 +27,14 @@ struct Cart_Tree {
                 }
             }
             if (!st.empty()) {
-                const auto &[val, pos] = st.top();
-                v[pos].rs = i;
+                v[st.top()].rs = i;
             } else {
                 root = i;
             }
-            st.emplace(a[i], i);
+            st.push(i);
         }
     }
-    const T operator[](int i) const { return v[i].val; }
+    const Node operator[](int i) const { return v[i]; }
     void dfs() {
         dfs(root);
         return;

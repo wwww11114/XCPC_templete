@@ -4,7 +4,7 @@ using namespace std;
 struct Euler {
     vector<int> in, out;     // 存储入,出度
     vector<vector<int>> gra; // 存储图
-    const int n;
+    int n;
     // 初始化
     Euler() = default;
     Euler(int n) : n(n), gra(n), in(n), out(n) {}
@@ -46,7 +46,7 @@ struct Euler {
     // 求解欧拉回路or通路
     vector<int> Euler_tour(int start) {
         vector<int> tour;
-        auto dfs = [&](auto dfs, int u) -> void {
+        auto dfs = [&](auto &&dfs, int u) -> void {
             while (!gra[u].empty()) {
                 int v = gra[u].back();
                 gra[u].pop_back();

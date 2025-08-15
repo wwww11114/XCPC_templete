@@ -11,7 +11,7 @@ struct Dinic {
     int n, m = 0, s, t;
 
     Dinic() = default;
-    Dinic(int n) : n(n), gra(n + 1), dep(n + 1), cur(n + 1) {}
+    Dinic(int n) : n(n), gra(n + 1) {}
 
     void add_edge(int u, int v, T w) {
         gra[u].emplace_back(v, m++);
@@ -46,29 +46,27 @@ struct Dinic {
         }
         return dep[t];
     }
-    
+
     T dfs(int u, T flow) {
         if (u == t) {
             return flow;
         }
         T res = flow;
-        while (cur[u] < gra[u].size() && res) {
+        while (cur[u] < gra[u].size()) {
             const auto &[v, id] = gra[u][cur[u]];
             if (edg[id] && dep[v] == dep[u] + 1) {
                 T k = dfs(v, min(res, edg[id]));
                 edg[id] -= k;
                 edg[id ^ 1] += k;
                 res -= k;
-                if (!res) { // 一定要加
-                    break;
+                if (!res) {
+                    return flow;
                 }
             }
             cur[u]++;
         }
         return flow - res;
     }
-
-    
 };
 
 void solve() {
@@ -80,7 +78,7 @@ void solve() {
         cin >> u >> v >> w;
         dinic.add_edge(u, v, w);
     }
-    cout << dinic.INF << '\n';
+    cout << dinic.work(s, t) << '\n';
     return;
 }
 int main() {

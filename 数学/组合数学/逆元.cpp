@@ -19,12 +19,15 @@ vector<i64> inv(vector<i64> &a) {
     i64 n = a.size() - 1;
     vector<i64> s(n + 1), sv(n + 1), v(n + 1);
     s[0] = 1;
-    for (int i = 1; i <= n; ++i)
+    for (int i = 1; i <= n; i++) {
         s[i] = s[i - 1] * a[i] % mod;
+    }
     sv[n] = qpow(s[n], mod - 2);
-    for (int i = n; i >= 1; --i)
+    for (int i = n; i >= 1; i--) {
         sv[i - 1] = sv[i] * a[i] % mod;
-    for (int i = 1; i <= n; ++i)
+    }
+    for (int i = 1; i <= n; i++) {
         v[i] = sv[i] * s[i - 1] % mod;
+    }
     return v;
 }

@@ -117,5 +117,5 @@ private:
     std::vector<bool> visx, visy;
 };
 int main() {
-    std::cout << std::numeric_limits<unsigned int>::epsilon() << "\n";
+    std::cout << std::numeric_limits<double>::epsilon() << "\n";
 }

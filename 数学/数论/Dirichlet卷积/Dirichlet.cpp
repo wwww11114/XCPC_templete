@@ -2,8 +2,7 @@
 using namespace std;
 typedef long long i64;
 template <class T>
-constexpr T qpow(T a, i64 b) {
-    T res{}
+constexpr T qpow(T a, i64 b, T res = 1) {
     for (; b != 0; b /= 2, a *= a) {
         if (b & 1) {
             res *= a;

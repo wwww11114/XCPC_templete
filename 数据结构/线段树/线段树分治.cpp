@@ -9,7 +9,7 @@ struct DSU {
     DSU(int n) : p(n + 1), sz(n + 1, 1) { iota(p.begin(), p.end(), 0); }
 
     int size(int x) { return sz[find(x)]; }
-    size_t version() { return his.size(); }
+    int version() { return his.size(); }
     bool same(int x, int y) { return find(x) == find(y); }
     int find(int x) {
         while (x != p[x]) {
@@ -17,7 +17,7 @@ struct DSU {
         }
         return x;
     }
-    void back_ver(size_t cur = 0) {
+    void back_ver(int cur = 0) {
         while (his.size() > cur) {
             auto [x, y] = his.top();
             his.pop();
@@ -48,17 +48,11 @@ struct SegmentTree {
 #define ls (id << 1)
 #define rs (id << 1 | 1)
     SegmentTree(int n, int m) : n(m), info(m << 2), dsu(n) {}
-    void add_edge(int u, int v, int s, int t) {
-        add_edge(1, 1, n, u, v, s, t);
-        return;
-    }
-    void work() {
-        work(1, 1, n);
-        return;
-    }
+    void add_edge(int u, int v, int s, int t) { add_edge(1, 1, n, u, v, s, t); }
+    void work() { work(1, 1, n); }
     void add_edge(int id, int l, int r, int u, int v, int s, int t) {
         if (s <= l && r <= t) {
-            info[id].emplace_back(u, v);
+            info[id].push_back({u, v});
             return;
         }
         int mid = (l + r) / 2;
@@ -68,10 +62,9 @@ struct SegmentTree {
         if (t > mid) {
             add_edge(rs, mid + 1, r, u, v, s, t);
         }
-        return;
     }
     void work(int id, int l, int r) {
-        size_t ver = dsu.version();
+        int ver = dsu.version();
         for (const auto &[x, y] : info[id]) {
             dsu.add_edge(x, y);
         }
@@ -87,7 +80,7 @@ struct SegmentTree {
     }
 #undef ls
 #undef rs
-    const int n;
+    int n;
     DSU dsu;
     std::vector<vector<pair<int, int>>> info;
 };

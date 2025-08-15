@@ -3,6 +3,7 @@ using namespace std;
 typedef long long i64;
 struct DSU {
     vector<int> p, sz;
+    DSU() = default;
     DSU(int n) : p(n + 1), sz(n + 1, 1) { iota(p.begin(), p.end(), 0); }
 
     int find(int x) { return p[x] == x ? x : p[x] = find(p[x]); }

@@ -7,6 +7,11 @@ template <typename Info, typename Tag>
 struct SegmentTree {
 #define ls (id << 1)
 #define rs (id << 1 | 1)
+    int n;
+    std::vector<Info> info;
+    std::vector<Tag> tag;
+
+    SegmentTree() = default;
     SegmentTree(int n) : n(n), info(n << 2), tag(n << 2) {} // 最值操作不可用此初始化
     SegmentTree(const std::vector<Info> &init) : SegmentTree((int)init.size() - 1) {
         auto build = [&](auto self, int id, int l, int r) -> void {
@@ -22,9 +27,7 @@ struct SegmentTree {
         build(build, 1, 1, n);
     }
 
-    void rangeUpdate(int l, int r, const Tag &dx) {
-        rangeUpdate(1, 1, n, l, r, dx);
-    }
+    void rangeUpdate(int l, int r, const Tag &dx) { rangeUpdate(1, 1, n, l, r, dx); }
     void update(int t, const Tag &dx) { rangeUpdate(t, t, dx); }
     Info rangeQuery(int l, int r) { return rangeQuery(1, 1, n, l, r); }
     Info query(int t) { return rangeQuery(t, t); }
@@ -71,15 +74,13 @@ struct SegmentTree {
     }
 #undef ls
 #undef rs
-    const int n;
-    std::vector<Info> info;
-    std::vector<Tag> tag;
 };
 
 constexpr i64 INF = 1E18;
 
 struct Tag {
     i64 add = 0;
+    Tag(i64 x = 0) : add(x) {}
     void apply(const Tag &dx) { add += dx.add; }
 };
 
@@ -87,12 +88,9 @@ struct Info {
     i64 mn = INF;
     i64 mx = -INF;
     i64 sum = 0;
-    i64 len = 1;
-    void apply(const Tag &dx) {
-        mn += dx.add;
-        mx += dx.add;
-        sum += len * dx.add;
-    }
+    i64 len = 0;
+    Info() = default;
+    Info(i64 x) : mn(x), mx(x), sum(x), len(1) {}
 };
 
 Info operator+(const Info &x, const Info &y) {
@@ -102,36 +100,4 @@ Info operator+(const Info &x, const Info &y) {
     res.sum = x.sum + y.sum;
     res.len = x.len + y.len;
     return res;
-}
-
-int main() {
-    std::ios::sync_with_stdio(false);
-    std::cin.tie(nullptr);
-    int n, m;
-    std::cin >> n >> m;
-    std::vector<Info> v(n + 1);
-    for (int i = 1; i <= n; ++i) {
-        int x;
-        std::cin >> x;
-        v[i] = {x, x, x, 1};
-    }
-    SegmentTree<Info, Tag> tr(v);
-    // SegmentTree<Info, Tag> tr(n);
-    // for(int i = 1; i <= n; ++i) {
-    //     int x;
-    //     std::cin >> x;
-    //     tr.update(i, Tag(x));
-    // }
-    while (m--) {
-        int opt, x, y;
-        std::cin >> opt >> x >> y;
-        if (opt == 1) {
-            int k;
-            std::cin >> k;
-            tr.rangeUpdate(x, y, Tag(k));
-        } else if (opt == 2) {
-            std::cout << tr.rangeQuery(x, y).sum << '\n';
-        }
-    }
-    return 0;
 }

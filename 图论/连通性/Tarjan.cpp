@@ -6,9 +6,9 @@ struct Tarjan {
     vector<vector<int>> graph;
     vector<int> dfn, low, scc, stk;
     vector<bool> instk;
-    int n, m, cnt = 0, scc_cnt = 0;
+    int n, cnt = 0, scc_cnt = 0;
     // 初始化
-    Tarjan(int n, int m) : n(n), m(m) {
+    Tarjan(int n) : n(n) {
         graph.resize(n + 1);
         dfn.resize(n + 1);
         low.resize(n + 1);
@@ -55,9 +55,9 @@ struct Tarjan {
     vector<vector<int>> graph;
     vector<int> dfn, low, scc, stk;
     vector<bool> instk;
-    int n, m, cnt = 0, scc_cnt = 0;
+    int n, cnt = 0, scc_cnt = 0;
     // 初始化
-    Tarjan(int n, int m) : n(n), m(m) {
+    Tarjan(int n) : n(n) {
         graph.resize(n + 1);
         dfn.resize(n + 1);
         low.resize(n + 1);
@@ -90,16 +90,18 @@ struct Tarjan {
                 stk.pop_back();
                 instk[v] = false;
                 scc[v] = scc_cnt;
-                if (v == u)
+                if (v == u) {
                     break;
+                }
             }
         }
     };
     // 求解强连通分量
     void solve() {
         for (int i = 1; i <= n; i++) {
-            if (!dfn[i])
+            if (!dfn[i]) {
                 dfs(i, -1);
+            }
         }
     }
 };

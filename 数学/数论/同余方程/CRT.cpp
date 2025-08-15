@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
-typedef long long i64;
+using i64 = long long;
+using i128 = __int128_t;
 
 i64 exgcd(i64 a, i64 b, i64 &x, i64 &y) {
     if (!b) {
@@ -11,7 +12,8 @@ i64 exgcd(i64 a, i64 b, i64 &x, i64 &y) {
     y -= a / b * x;
     return d;
 }
-// x = rem[i] (mod mode[i])
+
+// x === rem[i] (mod mode[i])
 i64 CRT(vector<i64> &mode, vector<i64> &rem) {
     i64 M = 1, n = mode.size() - 1;
     for (i64 i = 1; i <= n; i++) {
@@ -22,12 +24,10 @@ i64 CRT(vector<i64> &mode, vector<i64> &rem) {
         i64 m = M / mode[i];
         i64 x, y;
         exgcd(m, mode[i], x, y);
-        ans += (__int128_t)rem[i] * m * x % M;
-        ans %= M;
+        ans = (ans + (__int128_t)rem[i] * m * x % M) % M;
     }
     return (ans + M) % M;
 }
-
 
 void solve() {
     i64 n;

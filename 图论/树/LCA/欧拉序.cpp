@@ -43,20 +43,17 @@ struct Euler_tours {
         tree[v].push_back(u);
     }
 
-    void add_tree(const vector<vector<int>> &tree_) {
-        tree = tree_;
-    }
-
     void dfs(int u, int fa, int dep) {
         et_dep[++cnt] = dep;
         et[cnt] = u;
         id[u] = cnt;
         for (auto v : tree[u]) {
-            if (v != fa) {
-                dfs(v, u, dep + 1);
-                et_dep[++cnt] = dep;
-                et[cnt] = u;
+            if (v == fa) {
+                continue;
             }
+            dfs(v, u, dep + 1);
+            et_dep[++cnt] = dep;
+            et[cnt] = u;
         }
     }
 
@@ -71,8 +68,7 @@ struct Euler_tours {
         if (idu > idv) {
             swap(idu, idv);
         }
-        int idlca = st.query_id(idu, idv);
-        return et[idlca];
+        return et[st.query_id(idu, idv)];
     }
 };
 

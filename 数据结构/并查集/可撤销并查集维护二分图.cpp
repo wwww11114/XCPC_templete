@@ -2,13 +2,13 @@
 using namespace std;
 struct DSU {
     vector<int> p, sz, f;
-    stack<pair<int&, int>> his;
+    stack<pair<int &, int>> his;
     int n;
 
     DSU() = default;
     DSU(int n) : n(n), p(2 * n + 1), sz(2 * n + 1, 1), f(2 * n + 1, 1) { iota(p.begin(), p.end(), 0); }
 
-    size_t version() { return his.size(); }
+    int version() { return his.size(); }
     int size(int x) { return sz[find(x)]; }
     bool query(int x = 0) { return f[find(x)]; }
     bool same(int x, int y) { return find(x) == find(y); }
@@ -24,28 +24,25 @@ struct DSU {
         check(x, x + n);
         check(y, y + n);
     }
-    void back_ver(size_t cur = 0) {
+    void back_ver(int cur = 0) {
         while (his.size() > cur) {
             auto [x, y] = his.top();
             his.pop();
             x = y;
         }
-        return;
     }
-    
+
     void change(int &x, int y) {
         if (x != y) {
             his.emplace(x, x);
             x = y;
         }
-        return;
     }
     void check(int x, int y) {
         if (!same(x, y))
             return;
         change(f[find(x)], 0);
         change(f[0], 0);
-        return;
     }
     bool merge(int x, int y) {
         x = find(x), y = find(y);

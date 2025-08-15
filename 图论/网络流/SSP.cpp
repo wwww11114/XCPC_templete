@@ -6,7 +6,7 @@ struct SSP {
     vector<vector<pair<int, int>>> gra;
     vector<pair<T, T>> edg;
     vector<T> dis;
-    vector<int> cur;
+    vector<int> cur, tot;
     vector<bool> vis;
     T cost;
     constexpr static T INF = numeric_limits<T>::max();
@@ -14,7 +14,7 @@ struct SSP {
 
     SSP() = default;
 
-    SSP(int n) : n(n), gra(n + 1), cur(n + 1), vis(n + 1), dis(n + 1) {}
+    SSP(int n) : n(n), gra(n + 1) {}
 
     void add_edge(int u, int v, T w, T c) {
         gra[u].emplace_back(v, m++);
@@ -22,7 +22,7 @@ struct SSP {
         gra[v].emplace_back(u, m++);
         edg.emplace_back(0, -c);
     }
-    
+
     pair<T, T> work(int s, int t) {
         this->s = s, this->t = t;
         cost = 0;
@@ -34,7 +34,7 @@ struct SSP {
         }
         return make_pair(ans, cost);
     }
-    
+
     bool spfa() {
         dis.assign(n + 1, INF);
         vis.assign(n + 1, 0);
@@ -66,7 +66,7 @@ struct SSP {
             return flow;
         }
         T res = flow;
-        while (cur[u] < gra[u].size() && res) {
+        while (cur[u] < gra[u].size()) {
             const auto &[v, id] = gra[u][cur[u]];
             const auto &[w, c] = edg[id];
             if (!vis[v] && w && dis[v] == dis[u] + c) {
@@ -76,7 +76,7 @@ struct SSP {
                 res -= k;
                 cost += k * c;
                 if (!res) {
-                    break;
+                    return flow;
                 }
             }
             cur[u]++;

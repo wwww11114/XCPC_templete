@@ -1,0 +1,1 @@
+{"name":"Local: Exkmp","url":"c:\\Users\\36157\\Desktop\\cpp\\Algorithms & Data Structures\\字符串\\Exkmp.cpp","tests":[{"id":1748643078475,"input":"aaaabaa\naaaaa","output":"6\n21"}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"c:\\Users\\36157\\Desktop\\cpp\\Algorithms & Data Structures\\字符串\\Exkmp.cpp","group":"local","local":true}

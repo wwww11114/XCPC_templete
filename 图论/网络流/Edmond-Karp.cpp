@@ -11,7 +11,7 @@ struct EK {
     int n, m = 0, s, t;
 
     EK() = default;
-    EK(int n) : n(n) , gra(n + 1), lst(n + 1), flow(n + 1) {}
+    EK(int n) : n(n) , gra(n + 1) {}
 
     void add_edge(int u, int v, T w) {
         gra[u].push_back({v, m++});

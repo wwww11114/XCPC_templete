@@ -2,7 +2,7 @@
 using namespace std;
 typedef long long i64;
 
-i64 exgcd(i64 a, i64 b, i64& x, i64& y) {
+i64 exgcd(i64 a, i64 b, i64 &x, i64 &y) {
     if (!b) {
         x = 1, y = 0;
         return a;
@@ -12,12 +12,12 @@ i64 exgcd(i64 a, i64 b, i64& x, i64& y) {
     return d;
 }
 // x = rem[i] (mod mode[i])
-i64 EXCRT(vector<i64>& mode, vector<i64>& rem) {
+i64 EXCRT(vector<i64> &mode, vector<i64> &rem) {
     i64 M = mode[1], R = rem[1], n = mode.size() - 1, ans = 0;
     for (i64 i = 2; i <= n; i++) {
         i64 gd = __gcd(M, mode[i]);
         i64 lm = M / gd * mode[i];
-        if ((rem[i] - R) % gd)
+        if ((rem[i] - R) % gd || lm == 0)
             return -1;
         i64 x, y;
         exgcd(M / gd, mode[i] / gd, x, y);

@@ -5,7 +5,7 @@ struct Euler {
     int id = 0;
     vector<int> edg;           // 存储边
     vector<vector<int>> gra; // 存储图
-    const int n;
+    int n;
     // 初始化
     Euler(int n) : n(n), gra(n + 1) {}
     // 添加边
@@ -41,12 +41,13 @@ struct Euler {
     // 求解欧拉回路or通路
     vector<int> Euler_tour(int start) {
         vector<int> tour;
-        auto dfs = [&](auto dfs, int u) -> void {
+        auto dfs = [&](auto &&dfs, int u) -> void {
             while (!gra[u].empty()) {
                 int i = gra[u].back();
                 gra[u].pop_back();
-                if (edg[i] == -1)
+                if (edg[i] == -1) {
                     continue;
+                }
                 int v = edg[i] ^ u;
                 edg[i] = -1;
                 dfs(dfs, v);

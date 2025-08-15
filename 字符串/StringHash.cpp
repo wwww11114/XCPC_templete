@@ -9,15 +9,18 @@ using u128 = __uint128_t;
 
 struct StringHash {
     struct Hash {
-        i64 hash;
-        int n;
+        i64 hash = 0;
+        int n = 0;
         Hash() = default;
-        Hash(const i64 &hash, const int &n) : hash(hash), n(n) {}
-        Hash operator+(const Hash &rhs) {
+        Hash(i64 hash, int n) : hash(hash), n(n) {}
+        Hash operator+(Hash rhs) {
             return Hash(StringHash::add(rhs.hash, StringHash::mul(hash, StringHash::p[rhs.n])), n + rhs.n);
         }
-        friend constexpr strong_ordering operator<=>(const Hash &lhs, const Hash &rhs) {
-            return lhs.hash == rhs.hash ? lhs.n <=> rhs.n : lhs.hash <=> rhs.hash;
+        friend constexpr strong_ordering operator<=>(Hash lhs, Hash rhs) {
+            return tie(lhs.n, lhs.hash) <=> tie(rhs.n, rhs.hash);
+        }
+        bool operator==(Hash rhs) {
+            return tie(n, hash) == tie(rhs.n, rhs.hash);
         }
     };
     constexpr static i64 base = 114514;
@@ -35,13 +38,13 @@ struct StringHash {
             h[i] = add(s[i - 1], mul(h[i - 1], base));
         }
     }
-    StringHash(const char &c) : StringHash(string(1, c)) {}
+    StringHash(char c) : StringHash(string(1, c)) {}
 
-    Hash getHash(const int &l, const int &r) {
+    Hash getHash(int l, int r) {
         return Hash(sub(h[r + 1], mul(h[l], p[r - l + 1])), r - l + 1);
     }
 private:
-    void init(const int &m) {
+    void init(int m) {
         if (n > m) return;
         p.resize(m + 1);
         for (int i = n + 1; i <= m; i++) {
@@ -49,14 +52,14 @@ private:
         }
         n = m;
     }
-    inline static i64 mul(const i64 &a, const i64 &b) {
+    static i64 mul(i64 a, i64 b) {
         i128 c = (i128)a * b;
         return add(c >> 61, c & mod);
     }
-    inline static i64 add(const i64 &a, const i64 &b) {
+    static i64 add(i64 a, i64 b) {
         return a + b >= mod ? a + b - mod : a + b;
     }
-    inline static i64 sub(const i64 &a, const i64 &b) {
+    static i64 sub(i64 a, i64 b) {
         return a - b < 0 ? a - b + mod : a - b;
     }
 };

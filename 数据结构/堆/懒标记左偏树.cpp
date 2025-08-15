@@ -1,45 +1,40 @@
 #include <bits/stdc++.h>
 typedef long long i64;
 using namespace std;
-template <typename T, typename Tag, typename _Compare = less<T>>
+template <typename Info, typename Tag, typename _Compare = less<Info>>
 struct Leftist_Tree {
     struct Node {
-        T val;
+        Info val;
         Tag tag;
         int dis;
         Node *ls = nullptr, *rs = nullptr;
-        Node(const T &x) : val(x) {}
-    };
-    
+        Node(const Info &x) : val(x) {}
+    } *root = nullptr;
     _Compare comp;
-    size_t sz = 0;
-    Node *root = nullptr;
+    int sz = 0;
 
     Leftist_Tree() = default;
-    Leftist_Tree(const T &x) : root(new Node(x)) {}
+    Leftist_Tree(const Info &x) : root(new Node(x)) {}
 
 public:
-    size_t size() { return sz; }
+    int size() { return sz; }
     bool empty() { return root == nullptr; }
-    T top() {
+    Info top() {
         pushdown(root);
         return root->val;
     }
     void pop() {
         sz--;
         pushdown(root);
-        root = merge(root->ls, root->ls);
-        return;
+        root = merge(root->ls, root->rs);
     }
-    void push(const T &x) {
+    void push(const Info &x) {
         sz++;
         root = merge(root, new Node(x));
-        return;
     }
     void push(Leftist_Tree &x) {
         sz += x.sz;
         root = merge(root, x.root);
-        return;
     }
     void update(const Tag &dx) {
         if (root != nullptr) {
@@ -48,7 +43,7 @@ public:
     }
 
 private:
-    int dis(Node *x) { return x ? x->dis : 0; }
+    int dis(Node *x) { return x == nullptr ? 0 : x->dis; }
     Node *merge(Node *x, Node *y) {
         if (x == nullptr)
             return y;
@@ -78,7 +73,6 @@ private:
             x->rs->tag.apply(x->tag);
         }
         x->tag = Tag();
-        return;
     }
 };
 

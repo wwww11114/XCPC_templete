@@ -2,34 +2,90 @@
 using namespace std;
 typedef long long i64;
 // 线性基
-template <typename T>
-struct LinearBasis {
-    constexpr static int W = numeric_limits<T>::digits;
-    array<T, W> a;
+template <typename T, int B = numeric_limits<T>::digits>
+struct Basis {
+    array<T, B> Base{};
+    int sz = 0;
+
     bool insert(T x) {
-        for (int i = W - 1; i >= 0; i--) {
+        for (int i = B - 1; i >= 0; i--) {
             if (x >> i & 1) {
-                if (a[i]) {
-                    x ^= a[i];
-                } else {
-                    a[i] = x;
+                if (!Base[i]) {
+                    sz++;
+                    Base[i] = x;
                     return true;
                 }
+                x ^= Base[i];
             }
         }
         return false;
     }
-    T query_max(T res = 0) {
-        for (int i = W - 1; i >= 0; i--) {
-            res = max(res, res ^ a[i]);
+    int size() { return sz; }
+    bool contains(T x) {
+        for (int i = B - 1; i >= 0; i--) {
+            if (x >> i & 1) {
+                x ^= Base[i];
+            }
+        }
+        return x == 0;
+    }
+    T queryMax(T res = 0) {
+        for (int i = B - 1; i >= 0; i--) {
+            res = max(res, res ^ Base[i]);
         }
         return res;
-    }  
+    }
+    //第k小
+    T kth(T k) {
+        if (k < 1 || k >(T(1) << sz)) {
+            return -1;
+        }
+        k--;
+        T res = 0;
+        int len = sz - 1;
+        for (int i = B - 1; i >= 0; i--) {
+            if (Base[i]) {
+                if ((k >> len & 1) ^ (res >> i & 1)) {
+                    res ^= Base[i];
+                }
+                len--;
+            }
+        }
+        return res;
+    }
+
+    friend Basis<T> operator+(const Basis<T> &lhs, const Basis<T> &rhs) {
+        Basis<T> res = lhs;
+        for (int i = 0; i < Basis<T>::B; i++) {
+            res.insert(rhs.Base[i]);
+        }
+        return res;
+    }
+
+    friend Basis<T> operator&(Basis<T> lhs, Basis<T> rhs) {
+        Basis<T> res;
+        array<T, Basis<T>::B> Base{};
+        for (int i = Basis<T>::B - 1; i >= 0; i--) {
+            T x = rhs.Base[i];
+            T cur = rhs.Base[i];
+            bool flag = false;
+            for (int j = Basis<T>::B - 1; j >= 0; j--) {
+                if (x >> j & 1) {
+                    if (!lhs.Base[j]) {
+                        flag = true;
+                        lhs.Base[j] = x;
+                        Base[j] = cur;
+                        break;
+                    }
+                    x ^= lhs.Base[j];
+                    cur ^= Base[j];
+                }
+            }
+            if (!flag) {
+                res.insert(cur);
+            }
+        }
+        return res;
+    }
 };
 
-int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(0), cout.tie(0);
-    
-    return 0;
-}

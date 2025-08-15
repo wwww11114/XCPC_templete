@@ -3,9 +3,9 @@ using namespace std;
 using i64 = long long;
 
 struct HLD {
-    vector<int> fa, sz, hs, dep, top, in, out, rnk;
     vector<vector<int>> tree;
-    const int n;
+    vector<int> fa, sz, hs, dep, top, in, out, rnk;
+    int n;
     int cnt = 0;
 
     HLD() = default;
@@ -24,9 +24,6 @@ struct HLD {
     void add_edge(int u, int v) {
         tree[u].push_back(v);
         tree[v].push_back(u);
-    }
-    void add_tree(const vector<vector<int>> &tree_) {
-        tree = tree_;
     }
     void init(int root = 1) {
         dfs1(root);
@@ -49,31 +46,27 @@ struct HLD {
             return -1;
         }
         while (k) {
-            int t = top[u];
-            if (dep[u] - dep[t] + 1 <= k) {
-                k -= dep[u] - dep[t] + 1;
-                u = fa[t];
+            int t = fa[top[u]];
+            if (dep[u] - dep[t] <= k) {
+                k -= dep[u] - dep[t];
+                u = t;
             } else {
                 return rnk[in[u] - k];
             }
         }
-        return rnk[in[u] - k];
+        return rnk[in[u]];
     }
     bool isAncestor(int u, int v) {
         return in[u] <= in[v] && out[v] <= out[u];
     }
-
     map<int, vector<int>> build(vector<int> v) {
-        sort(v.begin(), v.end(), [&](const int &x, const int &y) {
-            return in[x] < in[y];
-        });
+        auto cmp = [&](const int &x, const int &y) {return in[x] < in[y]; };
+        sort(v.begin(), v.end(), cmp);
         int m = v.size() - 1;
         for (int i = 1; i <= m; ++i) {
             v.push_back(lca(v[i - 1], v[i]));
         }
-        sort(v.begin(), v.end(), [&](const int &x, const int &y) {
-            return in[x] < in[y];
-        });        
+        sort(v.begin(), v.end(), cmp);
         v.erase(unique(v.begin(), v.end()), v.end());
         map<int, vector<int>> vt;
         for (int i = 1; i < v.size(); ++i) {
@@ -117,8 +110,15 @@ private:
 };
 
 int main() {
-    std::ios::sync_with_stdio(false);
-    std::cin.tie(nullptr);
-
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr), cout.tie(nullptr);
+    int n;
+    cin >> n;
+    HLD hld(n);
+    for (int i = 1; i < n; ++i) {
+        int u, v;
+        cin >> u >> v;
+        hld.add_edge(u, v);
+    }
     return 0;
 }

@@ -1,1 +1,0 @@
-{"name":"Local: Lucas","url":"c:\\Users\\36157\\Desktop\\cpp\\Algorithms & Data Structures\\Lucas.cpp","tests":[{"id":1725975918547,"input":"2\n1 2 5\n2 1 5","output":"3 \n3"}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"c:\\Users\\36157\\Desktop\\cpp\\Algorithms & Data Structures\\Lucas.cpp","group":"local","local":true}

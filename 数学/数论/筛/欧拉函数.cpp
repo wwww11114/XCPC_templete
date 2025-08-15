@@ -44,4 +44,4 @@ void pre(i64 n) {
     }
 }
 
-int main() { return 0; }
+int main() { pre(100); return 0; }
