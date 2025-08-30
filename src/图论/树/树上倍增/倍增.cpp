@@ -15,7 +15,6 @@ struct Tree {
     Tree(int n) : n(n), tree(n + 1), dep(n + 1) {
         B = bit_width<unsigned>(n);
         fa.resize(B + 1, std::vector<int>(n + 1, -1));
-        iota(fa[0].begin(), fa[0].end(), 0);
     }
     void add_edge(int u, int v) {
         tree[u].push_back(v);
@@ -53,7 +52,7 @@ struct Tree {
         if (u == v) {
             return u;
         }
-        for (int i = B; i >= 0 ; i--) {
+        for (int i = B; i >= 0; i--) {
             if (fa[i][u] != fa[i][v]) {
                 u = fa[i][u];
                 v = fa[i][v];

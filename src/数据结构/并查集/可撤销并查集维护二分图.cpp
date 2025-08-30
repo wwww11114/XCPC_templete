@@ -6,7 +6,9 @@ struct DSU {
     int n;
 
     DSU() = default;
-    DSU(int n) : n(n), p(2 * n + 1), sz(2 * n + 1, 1), f(2 * n + 1, 1) { iota(p.begin(), p.end(), 0); }
+    DSU(int n) : n(n), p(2 * n + 1), sz(2 * n + 1, 1), f(2 * n + 1, 1) { 
+        iota(p.begin(), p.end(), 0); 
+    }
 
     int version() { return his.size(); }
     int size(int x) { return sz[find(x)]; }
@@ -24,7 +26,7 @@ struct DSU {
         check(x, x + n);
         check(y, y + n);
     }
-    void back_ver(int cur = 0) {
+    void rollback(int cur) {
         while (his.size() > cur) {
             auto [x, y] = his.top();
             his.pop();
@@ -39,17 +41,20 @@ struct DSU {
         }
     }
     void check(int x, int y) {
-        if (!same(x, y))
+        if (!same(x, y)) {
             return;
+        }
         change(f[find(x)], 0);
         change(f[0], 0);
     }
     bool merge(int x, int y) {
         x = find(x), y = find(y);
-        if (x == y)
+        if (x == y) {
             return false;
-        if (sz[x] < sz[y])
+        }
+        if (sz[x] < sz[y]) {
             swap(x, y);
+        }
         change(sz[x], sz[x] + sz[y]);
         change(p[y], x);
         return true;

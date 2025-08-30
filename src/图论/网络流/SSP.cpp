@@ -10,16 +10,16 @@ struct SSP {
     vector<bool> vis;
     T cost;
     constexpr static T INF = numeric_limits<T>::max();
-    int n, m = 0, s, t;
+    int n, s, t;
 
     SSP() = default;
 
     SSP(int n) : n(n), gra(n + 1) {}
 
     void add_edge(int u, int v, T w, T c) {
-        gra[u].emplace_back(v, m++);
+        gra[u].emplace_back(v, edg.size());
         edg.emplace_back(w, c);
-        gra[v].emplace_back(u, m++);
+        gra[v].emplace_back(u, edg.size());
         edg.emplace_back(0, -c);
     }
 

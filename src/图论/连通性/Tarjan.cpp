@@ -16,7 +16,9 @@ struct Tarjan {
         instk.resize(n + 1);
     }
     // 添加边
-    void add_edge(int u, int v) { graph[u].push_back(v); }
+    void add_edge(int u, int v) { 
+        graph[u].push_back(v); 
+    }
     void dfs(int u) {
         dfn[u] = low[u] = ++cnt;
         stk.push_back(u);
@@ -31,13 +33,14 @@ struct Tarjan {
         }
         if (dfn[u] == low[u]) {
             scc_cnt++;
-            while (1) {
+            while (true) {
                 int v = stk.back();
                 stk.pop_back();
                 instk[v] = false;
                 scc[v] = scc_cnt;
-                if (v == u)
+                if (v == u) {
                     break;
+                }
             }
         }
     }
@@ -52,10 +55,10 @@ struct Tarjan {
 };
 // 无向图割边
 struct Tarjan {
-    vector<vector<int>> graph;
+    vector<vector<pair<int, int>>> graph;
     vector<int> dfn, low, scc, stk;
     vector<bool> instk;
-    int n, cnt = 0, scc_cnt = 0;
+    int n, cnt = 0, scc_cnt = 0, id = 0;
     // 初始化
     Tarjan(int n) : n(n) {
         graph.resize(n + 1);
@@ -66,18 +69,20 @@ struct Tarjan {
     }
     // 添加边
     void add_edge(int u, int v) {
-        graph[u].push_back(v);
-        graph[v].push_back(u);
+        id++;
+        graph[u].push_back({v, id});
+        graph[v].push_back({u, id});
     }
-    void dfs(int u, int fa) {
+    void dfs(int u, int fid) {
         dfn[u] = low[u] = ++cnt;
         stk.push_back(u);
         instk[u] = true;
-        for (int v : graph[u]) {
-            if (v == fa)
+        for (auto [v, id] : graph[u]) {
+            if (id == fid) {
                 continue;
+            }
             if (!dfn[v]) {
-                dfs(v, u);
+                dfs(v, id);
                 low[u] = min(low[u], low[v]);
             } else if (instk[v]) {
                 low[u] = min(low[u], dfn[v]);

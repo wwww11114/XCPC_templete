@@ -8,15 +8,15 @@ struct EK {
     vector<vector<pair<int, int>>> gra;
     vector<T> edg, flow;
     vector<pair<int, int>> lst;
-    int n, m = 0, s, t;
+    int n, s, t;
 
     EK() = default;
     EK(int n) : n(n) , gra(n + 1) {}
 
     void add_edge(int u, int v, T w) {
-        gra[u].push_back({v, m++});
+        gra[u].emplace(v, edg.size());
         edg.push_back(w);
-        gra[v].push_back({u, m++});
+        gra[v].emplace(u, edg.size());
         edg.push_back(0);
     }
     T work(int s, int t) {

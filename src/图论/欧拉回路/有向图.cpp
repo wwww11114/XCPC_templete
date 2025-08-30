@@ -38,8 +38,9 @@ struct Euler {
     // 判断是否存在欧拉回路
     bool is_Euler() {
         for (int i = 1; i <= n; i++) {
-            if (in[i] != out[i])
+            if (in[i] != out[i]) {
                 return false;
+            }
         }
         return true;
     }

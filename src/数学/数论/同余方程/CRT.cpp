@@ -29,7 +29,6 @@ i64 CRT(vector<i64> &mode, vector<i64> &rem) {
     return (ans + M) % M;
 }
 
-
 void solve() {
     i64 n;
     cin >> n;

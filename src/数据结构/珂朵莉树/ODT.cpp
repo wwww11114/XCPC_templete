@@ -31,8 +31,9 @@ struct ODT {
         }
         auto it = st.upper_bound({ins, n + 1, 0});
         it--;
-        if (it->l == ins)
+        if (it->l == ins) {
             return;
+        }
         i64 l = it->l, r = it->r, v = it->v;
         st.erase(it);
         st.insert({l, ins - 1, v});

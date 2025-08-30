@@ -29,8 +29,9 @@ struct Lucas {
         }
     }
     i64 C(i64 n, i64 m) {
-        if (n == 0)
+        if (n == 0) {
             return 1;
+        }
         i64 res = C(n / mod, m / mod);
         n %= mod;
         m %= mod;

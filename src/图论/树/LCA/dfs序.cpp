@@ -31,8 +31,8 @@ struct Tree {
     vector<int> fa, dfn;
     ST<int> st;
 
-    Euler_tours() = default;
-    Euler_tours(int n) : n(n), fa(n + 1), dfn(n + 1), tree(n + 1) {}
+    Tree() = default;
+    Tree(int n) : n(n), fa(n + 1), dfn(n + 1), tree(n + 1) {}
 
     void add_edge(int u, int v) {
         tree[u].push_back(v);
@@ -76,7 +76,7 @@ struct Tree {
 void solve() {
     int n, q, root;
     cin >> n >> q >> root;
-    Euler_tours et(n);
+    Tree et(n);
     for (i64 i = 1; i < n; i++) {
         i64 u, v;
         cin >> u >> v;

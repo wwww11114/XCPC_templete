@@ -71,7 +71,7 @@ struct Matrix {
         }
     }
 
-    bool Gauss_jordan() {
+    bool Gauss() {
         for (int i = 0; i < n; i++) {
             for (int j = i; j < n; j++) {
                 if (v[j][i]) {
@@ -102,7 +102,7 @@ struct Matrix {
         for (int i = 0; i < x.n; i++) {
             x[i][x.n + i] = 1;
         }
-        if (!x.Gauss_jordan()) {
+        if (!x.Gauss()) {
             return {false, Matrix()};
         }
         Matrix res(x.n);
@@ -137,7 +137,7 @@ struct Matrix {
 
     static i64 det(Matrix x) {
         assert(x.n == x.m);
-        assert(x.Gauss_jordan());
+        x.Gauss();
         i64 res = 1;
         for (int i = 0; i < x.n; i++) {
             res = res * x[i][i] % mod;

@@ -3,47 +3,34 @@ using namespace std;
 typedef long long i64;
 template <typename T, typename _Compare = less<T>>
 struct Cart_Tree {
-    struct Node {
-        int ls = 0, rs = 0;
-        T val;
-        Node() = default;
-    };
     int n, root = 0;
-    vector<Node> v;
+    vector<int> ls, rs;
     _Compare comp;
 
     Cart_Tree() = default;
-    Cart_Tree(const vector<T> &a) : n(a.size() - 1), v(n + 1) {
+    Cart_Tree(const vector<T> &a) : n(a.size() - 1), ls(n + 1), rs(n + 1) {
         stack<int> st;
         for (int i = 1; i <= n; i++) {
-            v[i].val = a[i];
-            while (!st.empty()) {
-                const auto &pos = st.top();
-                if (comp(a[i], a[pos])) {
-                    v[i].ls = pos;
-                    st.pop();
-                } else {
-                    break;
-                }
+            while (!st.empty() && comp(a[i], a[st.top()])) {
+                ls[i] = st.top();
+                st.pop();
             }
             if (!st.empty()) {
-                const auto &pos = st.top();
-                v[pos].rs = i;
+                rs[st.top()] = i;
             } else {
                 root = i;
             }
             st.push(i);
         }
     }
-    const T operator[](int i) const { return v[i].val; }
     void dfs() {
         dfs(root);
         return;
     }
     void dfs(int u) {
         cout << u << ' ';
-        if (v[u].ls) dfs(v[u].ls);
-        if (v[u].rs) dfs(v[u].rs);
+        if (ls[u]) dfs(ls[u]);
+        if (rs[u]) dfs(rs[u]);
         return;
     }
 };

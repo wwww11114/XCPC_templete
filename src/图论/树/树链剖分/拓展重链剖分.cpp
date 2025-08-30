@@ -45,22 +45,26 @@ struct HLD {
         return dep[u] < dep[v] ? u : v;
     }
     int kth(int u, int k) {
-        if (dep[u] < k) {
+        if (dep[u] <= k) {
             return -1;
         }
-        while (k) {
-            int t = fa[top[u]];
-            if (dep[u] - dep[t] <= k) {
-                k -= dep[u] - dep[t];
-                u = t;
-            } else {
-                return rnk[in[u] - k];
-            }
+        k = dep[u] - k;
+        while (dep[top[u]] > k) {
+            u = fa[top[u]];
         }
-        return rnk[in[u]];
+        return rnk[in[u] - dep[u] + k];
     }
     bool isAncestor(int u, int v) {
         return in[u] <= in[v] && out[v] <= out[u];
+    }
+    int intersection(int x, int y, int X, int Y) {
+        vector<int> t{lca(x, X), lca(x, Y), lca(y, X), lca(y, Y)};
+        ranges::sort(t);
+        int r = lca(x, y), R = lca(X, Y);
+        if (dep[t[0]] < min(dep[r], dep[R]) || dep[t[2]] < max(dep[r], dep[R])) {
+            return 0;
+        }
+        return 1 + dist(t[2], t[3]);
     }
     map<int, vector<int>> build(vector<int> v) {
         auto cmp = [&](const int &x, const int &y) {return in[x] < in[y]; };
@@ -107,7 +111,7 @@ struct HLD {
         func(in[u] + edge, out[u], tag);
     }
     template <typename Func, typename Tag>
-    void pathUpate(int u, int v, const Tag &tag, const Func &func, bool edge = false) {
+    void pathUpdate(int u, int v, const Tag &tag, const Func &func, bool edge = false) {
         while (top[u] != top[v]) {
             if (dep[top[u]] < dep[top[v]]) {
                 swap(u, v);
@@ -155,12 +159,12 @@ struct HLD {
 
 private:
     void dfs1(int u) {
+        dep[u] = dep[fa[u]] + 1;
         for (const int &v : tree[u]) {
             if (v == fa[u]) {
                 continue;
             }
             fa[v] = u;
-            dep[v] = dep[u] + 1;
             dfs1(v);
             sz[u] += sz[v];
             if (hs[u] == -1 || sz[v] > sz[hs[u]]) {
@@ -316,7 +320,7 @@ int main() {
         if (opt == 1) {
             int u, v, x;
             cin >> u >> v >> x;
-            hld.pathUpate(u, v, Tag(x), [&](int l, int r, const Tag &dx) {
+            hld.pathUpdate(u, v, Tag(x), [&](int l, int r, const Tag &dx) {
                 seg.rangeUpdate(l, r, dx);
             });
         } else if (opt == 2) {

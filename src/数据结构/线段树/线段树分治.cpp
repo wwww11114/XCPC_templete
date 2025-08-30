@@ -1,12 +1,14 @@
 #include <bits/stdc++.h>
 using namespace std;
 using i64 = long long;
-struct DSU {
+struct RDSU {
     vector<int> p, sz;
     stack<pair<int &, int>> his;
 
-    DSU() = default;
-    DSU(int n) : p(n + 1), sz(n + 1, 1) { iota(p.begin(), p.end(), 0); }
+    RDSU() = default;
+    RDSU(int n) : p(n + 1), sz(n + 1, 1) {
+        iota(p.begin(), p.end(), 0);
+    }
 
     int size(int x) { return sz[find(x)]; }
     int version() { return his.size(); }
@@ -17,33 +19,32 @@ struct DSU {
         }
         return x;
     }
-    void back_ver(int cur = 0) {
+    void rollback(int cur) {
         while (his.size() > cur) {
             auto [x, y] = his.top();
             his.pop();
             x = y;
         }
     }
-    void add_edge(int x, int y) { merge(x, y); }
-
     void change(int &x, int y) {
         if (x != y) {
-            his.emplace(&x, x);
+            his.emplace(x, x);
             x = y;
         }
     }
     bool merge(int x, int y) {
         x = find(x), y = find(y);
-        if (x == y)
+        if (x == y) {
             return false;
-        if (sz[x] < sz[y])
+        }
+        if (sz[x] < sz[y]) {
             swap(x, y);
+        }
         change(sz[x], sz[x] + sz[y]);
         change(p[y], x);
         return true;
     }
 };
-
 struct SegmentTree {
 #define ls (id << 1)
 #define rs (id << 1 | 1)
@@ -66,7 +67,7 @@ struct SegmentTree {
     void work(int id, int l, int r) {
         int ver = dsu.version();
         for (const auto &[x, y] : info[id]) {
-            dsu.add_edge(x, y);
+            dsu.merge(x, y);
         }
         if (l == r) {
 
@@ -75,13 +76,13 @@ struct SegmentTree {
             work(ls, l, mid);
             work(rs, mid + 1, r);
         }
-        dsu.back_ver(ver);
+        dsu.rollback(ver);
         return;
     }
 #undef ls
 #undef rs
     int n;
-    DSU dsu;
+    RDSU dsu;
     std::vector<vector<pair<int, int>>> info;
 };
 

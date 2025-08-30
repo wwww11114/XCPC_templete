@@ -2,9 +2,8 @@
 using namespace std;
 typedef long long i64;
 // 线性基
-template <typename T>
+template <typename T, int B = numeric_limits<T>::digits>
 struct Basis {
-    constexpr static int B = numeric_limits<T>::digits;
     array<T, B> Base{};
     int sz = 0;
 
@@ -36,6 +35,12 @@ struct Basis {
         }
         return res;
     }
+    T queryMin(T res = 0) {
+        for (int i = B - 1; i >= 0; i--) {
+            res = min(res, res ^ Base[i]);
+        }
+        return res;
+    }
     //第k小
     T kth(T k) {
         if (k < 1 || k >(T(1) << sz)) {
@@ -45,18 +50,18 @@ struct Basis {
         T res = 0;
         int len = sz - 1;
         for (int i = B - 1; i >= 0; i--) {
-            if (Base[i]) {
-                if ((k >> len & 1) ^ (res >> i & 1)) {
-                    res ^= Base[i];
-                }
-                len--;
+            if (!Base[i]) {
+                continue;
             }
+            if ((k >> len & 1) ^ (res >> i & 1)) {
+                res ^= Base[i];
+            }
+            len--;
         }
         return res;
     }
 
-    friend Basis<T> operator+(const Basis<T> &lhs, const Basis<T> &rhs) {
-        Basis<T> res = lhs;
+    friend Basis<T> operator+(Basis<T> res, const Basis<T> &rhs) {
         for (int i = 0; i < Basis<T>::B; i++) {
             res.insert(rhs.Base[i]);
         }

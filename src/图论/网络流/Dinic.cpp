@@ -8,15 +8,15 @@ struct Dinic {
     vector<vector<pair<int, int>>> gra;
     vector<T> edg;
     vector<int> dep, cur;
-    int n, m = 0, s, t;
+    int n, s, t;
 
     Dinic() = default;
     Dinic(int n) : n(n), gra(n + 1) {}
 
     void add_edge(int u, int v, T w) {
-        gra[u].emplace_back(v, m++);
+        gra[u].emplace_back(v, edg.size());
         edg.push_back(w);
-        gra[v].emplace_back(u, m++);
+        gra[v].emplace_back(u, edg.size());
         edg.push_back(0);
     }
     T work(int s, int t) {

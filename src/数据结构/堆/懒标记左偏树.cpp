@@ -45,10 +45,12 @@ public:
 private:
     int dis(Node *x) { return x == nullptr ? 0 : x->dis; }
     Node *merge(Node *x, Node *y) {
-        if (x == nullptr)
+        if (x == nullptr) {
             return y;
-        if (y == nullptr)
+        }
+        if (y == nullptr) {
             return x;
+        }
         pushdown(x);
         pushdown(y);
         if (comp(y->val, x->val)) {
