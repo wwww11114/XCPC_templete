@@ -1,1 +1,0 @@
-# XCPC_templete

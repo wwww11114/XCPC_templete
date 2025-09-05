@@ -1,1 +1,0 @@
-{"name":"Local: kmp","url":"c:\\Users\\36157\\Desktop\\cpp\\Algorithms & Data Structures\\字符串\\kmp.cpp","tests":[{"id":1748642197042,"input":"ABABABC\nABA\n","output":"1\n3\n0 0 1 \n"}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"c:\\Users\\36157\\Desktop\\cpp\\Algorithms & Data Structures\\字符串\\kmp.cpp","group":"local","local":true}
