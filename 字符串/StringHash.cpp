@@ -9,19 +9,14 @@ using u128 = __uint128_t;
 
 struct StringHash {
     struct Hash {
-        i64 hash = 0;
         int n = 0;
+        i64 hash = 0;
         Hash() = default;
         Hash(i64 hash, int n) : hash(hash), n(n) {}
-        Hash operator+(Hash rhs) {
+        Hash operator+(const Hash &rhs) {
             return Hash(StringHash::add(rhs.hash, StringHash::mul(hash, StringHash::p[rhs.n])), n + rhs.n);
         }
-        friend constexpr strong_ordering operator<=>(Hash lhs, Hash rhs) {
-            return tie(lhs.n, lhs.hash) <=> tie(rhs.n, rhs.hash);
-        }
-        bool operator==(Hash rhs) {
-            return tie(n, hash) == tie(rhs.n, rhs.hash);
-        }
+        auto operator<=>(const Hash &rhs) const = default;
     };
     constexpr static i64 base = 114514;
     constexpr static i64 mod = (1ll << 61) - 1;
@@ -57,10 +52,18 @@ private:
         return add(c >> 61, c & mod);
     }
     static i64 add(i64 a, i64 b) {
-        return a + b >= mod ? a + b - mod : a + b;
+        i64 c = a + b;
+        if (c >= mod) {
+            c -= mod;
+        }
+        return c;
     }
     static i64 sub(i64 a, i64 b) {
-        return a - b < 0 ? a - b + mod : a - b;
+        i64 c = a - b;
+        if (c < 0) {
+            c += mod;
+        }
+        return c;
     }
 };
 
@@ -75,6 +78,6 @@ int main() {
         cin >> s;
         st.insert(StringHash(s).getHash(0, s.size() - 1));
     }
-    cout << st.size() << '\n';
+    cout << (1ll << 61) - 1 << '\n';
     return 0;
 }

@@ -8,56 +8,53 @@ using i128 = __int128_t;
 using u128 = __uint128_t;
 
 struct SuffixArray {
-    vector<int> sa, rk;
+    int n;
+    vector<int> sa, rk, lc;
     SuffixArray() = default;
-    SuffixArray(const string &s) : sa(s.size()), rk(s.size() << 1) {
-        for (int i = 0; i < s.size(); i++) {
-            rk[i] = s[i];
+    SuffixArray(const string &s) : n(s.size()), sa(n), lc(n), rk(n << 1) {
+        std::iota(sa.begin(), sa.end(), 0);
+        ranges::sort(sa, [&](int a, int b) {
+            return s[a] < s[b];
+        });
+        rk[sa[0]] = 1;
+        for (int i = 1; i < n; i++) {
+            rk[sa[i]] = rk[sa[i - 1]] + (s[sa[i]] != s[sa[i - 1]]);
         }
-        int p = 128;
-        vector<int> pre(p + 1);
-        for (int i = 0; i < s.size(); i++) {
-            pre[rk[i]]++;
-        }
-        for (int i = 1; i <= p; i++) {
-            pre[i] += pre[i - 1];
-        }
-        for (int i = s.size() - 1; i >= 0; i--) {
-            sa[--pre[rk[i]]] = i;
-        }
-        vector<int> nsa(s.size()), nrk(s.size() << 1);
-        for (int w = 1; w < s.size(); w <<= 1) {
-            for (int i = (int)s.size() - w, cur = 0; i < s.size(); i++) {
+        vector<int> nsa(n), nrk(n << 1), cnt(n + 1);
+        for (int w = 1; rk[sa[n - 1]] < n; w <<= 1) {
+            for (int i = n - w, cur = 0; i < n; i++) {
                 nsa[cur++] = i;
             }
-            for (int i = 0, cur = w; i < s.size(); i++) {
+            for (int i = 0, cur = w; i < n; i++) {
                 if (sa[i] >= w) {
                     nsa[cur++] = sa[i] - w;
                 }
             }
-            vector<int> pre(p + 1);
-            for (int i = 0; i < s.size(); i++) {
-                pre[rk[i]]++;
+            ranges::fill(cnt, 0);
+            for (int i = 0; i < n; i++) {
+                cnt[rk[i]]++;
             }
-            for (int i = 1; i <= p; i++) {
-                pre[i] += pre[i - 1];
+            for (int i = 1; i < n; i++) {
+                cnt[i] += cnt[i - 1];
             }
-            for (int i = s.size() - 1; i >= 0; i--) {
-                sa[--pre[rk[nsa[i]]]] = nsa[i];
+            for (int i = n - 1; i >= 0; i--) {
+                sa[--cnt[rk[nsa[i]]]] = nsa[i];
             }
-            p = 0;
-            for (int i = 0; i < s.size(); i++) {
-                if (!i || tie(rk[sa[i]], rk[sa[i] + w]) != tie(rk[sa[i - 1]], rk[sa[i - 1] + w])) {
-                    p++;
-                }
-                nrk[sa[i]] = p;
+            nrk[sa[0]] = 1;
+            for (int i = 1; i < n; i++) {
+                nrk[sa[i]] = nrk[sa[i - 1]] + (tie(rk[sa[i]], rk[sa[i] + w]) != tie(rk[sa[i - 1]], rk[sa[i - 1] + w]));
             }
             swap(rk, nrk);
-            if (p == s.size()) {
-                break;
+        }
+        rk.resize(n);
+        for (int i = 0, j = 0; i < n; i++) {
+            if (rk[i] == 0) {
+                j = 0;
+            } else {
+                for (j -= (j > 0); i + j < n && sa[rk[i] - 1] + j < n && s[i + j] == s[sa[rk[i] - 1] + j]; j++);
+                lc[rk[i] - 1] = j;
             }
         }
-        rk.resize(s.size());
     }
 };
 

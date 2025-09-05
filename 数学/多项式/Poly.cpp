@@ -9,7 +9,6 @@ using u128 = __uint128_t;
 
 constexpr i64 mod = 998244353;
 constexpr i64 G = 3;
-constexpr i64 INVG = 332748118;
 
 i64 qpow(i64 a, i64 b) {
     i64 res = 1;
@@ -27,67 +26,70 @@ i64 inv(i64 a) {
     return qpow(a, mod - 2);
 }
 
-struct Poly {
-    std::vector<i64> v;
+struct Poly : std::vector<i64> {
+    using std::vector<i64>::vector;
+    inline static vector<i64> w{1};
 
-    Poly() = default;
-    explicit Poly(const i64 &_v) : v(1, _v) {}
-    explicit Poly(const vector<i64> &_v) : v(_v.begin(), _v.end()) {}
-
-    int size() const { return v.size(); }
-
-    i64 operator[](int idx) const {
-        if (idx < 0 || idx >= size()) {
-            return 0;
+    friend Poly operator+(Poly res, const i64 &y) {
+        for (auto &x : res) {
+            x = x + y >= mod ? x + y - mod : x + y;
         }
-        return v[idx];
-    }
-
-    friend Poly operator+(const Poly &x, const Poly &y) {
-        vector<i64> res(max(x.size(), y.size()));
-        for (int i = 0; i < res.size(); i++) {
-            res[i] = (x[i] + y[i]) % mod;
-        }
-        return Poly(res);
-    }
-    friend Poly operator-(const Poly &x, const Poly &y) {
-        vector<i64> res(max(x.size(), y.size()));
-        for (int i = 0; i < res.size(); i++) {
-            res[i] = (x[i] - y[i] + mod) % mod;
-        }
-        return Poly(res);
-    }
-    friend Poly operator*(const Poly &x, const Poly &y) {
-        return Poly(multiply(x.v, y.v));
-    }
-    friend Poly operator/(const Poly &x, const Poly &y) {
-        int n = x.size() - y.size() + 1;
-        return rev(modxk(rev(x) * inv(rev(y), n), n));
-    }
-
-    friend Poly operator+(const Poly &x, const i64 &y) {
-        vector<i64> res(x.size());
-        for (int i = 0; i < res.size(); i++) {
-            res[i] = (x[i] + y) % mod;
-        }
-        return Poly(res);
+        return res;
     }
     friend Poly operator-(const Poly &x, const i64 &y) {
-        vector<i64> res(x.size());
-        for (int i = 0; i < res.size(); i++) {
-            res[i] = (x[i] - y + mod) % mod;
-        }
-        return Poly(res);
+        return x + (mod - y);
     }
-    friend Poly operator*(const Poly &x, const i64 &y) {
-        vector<i64> res(x.size());
-        for (int i = 0; i < res.size(); i++) {
-            res[i] = x[i] * y % mod;
+    friend Poly operator*(Poly res, const i64 &y) {
+        for (auto &x : res) {
+            x = x * y % mod;
         }
-        return Poly(res);
+        return res;
     }
     friend Poly operator/(const Poly &x, const i64 &y) {
         return x * ::inv(y);
+    }
+    friend Poly operator%(Poly res, size_t k) {
+        res.resize(min(res.size(), k));
+        return res;
+    }
+    static Poly mulxk(Poly x, int k) {
+        x.insert(x.begin(), k, 0);
+        return x;
+    }
+    static Poly divxk(Poly x, int k) {
+        if (x.size() <= k) {
+            return Poly();
+        }
+        x.erase(x.begin(), x.begin() + k);
+        return x;
+    }
+
+    friend Poly operator+(Poly res, const Poly &y) {
+        res.resize(max(res.size(), y.size()));
+        for (int i = 0; i < y.size(); i++) {
+            res[i] = res[i] + y[i] >= mod ? res[i] + y[i] - mod : res[i] + y[i];
+        }
+        return res;
+    }
+    friend Poly operator-(const Poly &x, const Poly &y) {
+        return x + y * (mod - 1);
+    }
+    friend Poly operator*(Poly x, Poly y) {
+        auto m = x.size() + y.size() - 1;
+        int n = bit_ceil(m);
+        x.resize(n), y.resize(n);
+        NTT(x), NTT(y);
+        for (int i = 0; i < n; i++) {
+            x[i] = x[i] * y[i] % mod;
+        }
+        NTT(x, -1);
+        x.resize(m);
+        x = x * ::inv(n);
+        return x;
+    }
+    friend Poly operator/(const Poly &x, const Poly &y) {
+        int n = x.size() - y.size() + 1;
+        return rev(rev(x) * inv(rev(y), n) % n);
     }
 
     static Poly inv(const Poly &x) {
@@ -95,138 +97,178 @@ struct Poly {
     }
     static Poly inv(const Poly &x, int n) {
         assert(x[0]);
-        Poly b(::inv(x[0]));
-        int k = 1;
-        while (k < n) {
-            k *= 2;
-            b = modxk(b * (Poly(2) - modxk(x, k) * b), k);
+        Poly res{::inv(x[0])};
+        for (int k = 2; k < 2 * n; k *= 2) {
+            res = res * (Poly{2} - x % k * res) % k;
         }
-        return modxk(b, n);
+        return res % n;
     }
-    
+
     static Poly qpow(const Poly &a, i64 b) {
         return qpow(a, b, a.size());
     }
     static Poly qpow(const Poly &a, i64 b, int n) {
+        assert(a[0] == 1);
         return exp(ln(a, n) * b, n);
+    }
+
+    static Poly pow(const Poly &a, i64 b) {
+        return pow(a, b, a.size());
+    }
+    static Poly pow(const Poly &a, i64 b, int n) {
+        int id = 0;
+        while (id < a.size() && !a[id]) {
+            id++;
+        }
+        if (id * b >= n) {
+            return Poly(n);
+        }
+        Poly res = divxk(a, id) / a[id];
+        return mulxk(exp(ln(res, n - id * b) * b, n - id * b) * ::qpow(a[id], b), id * b);
     }
 
     static Poly sqrt(const Poly &x) {
         return sqrt(x, x.size());
     }
     static Poly sqrt(const Poly &x, int n) {
-        Poly y(1);
-        int k = 1;
-        while (k < n) {
-            k *= 2;
-            y = (y + modxk(modxk(x, k) * inv(y, k), k)) * ((mod + 1) / 2);
+        Poly res{1};
+        for (int k = 2; k < 2 * n; k *= 2) {
+            res = (res + x % k * inv(res, k) % k) * ((mod + 1) / 2);
         }
-        return modxk(y, n);
+        return res % n;
     }
 
     static Poly ln(const Poly &x) {
         return ln(x, x.size());
     }
     static Poly ln(const Poly &x, int n) {
-        return modxk(integr(deriv(x) * inv(x, n)), n);
+        return integr(deriv(x) * inv(x, n) % n) % n;
     }
 
     static Poly exp(const Poly &x) {
         return exp(x, x.size());
     }
     static Poly exp(const Poly &x, int n) {
-        Poly y(1);
-        int k = 1;
-        while (k < n) {
-            k *= 2;
-            y = modxk(y * (Poly(1) - ln(y, k) + modxk(x, k)), k);
+        Poly res{1};
+        for (int k = 2; k < 2 * n; k *= 2) {
+            res = res * (Poly{1} - ln(res, k) + x % k) % k;
         }
-        return modxk(y, n);
+        return res % n;
     }
-    // 求导 
+
+    static Poly sin(const Poly &x) {
+        return sin(x, x.size());
+    }
+    static Poly sin(const Poly &x, int n) {
+        static i64 i = 86583718;
+        return (exp(x * i, n) - exp(x * (mod - i), n)) * ::inv(2 * i) % n;
+    }
+
+    static Poly cos(const Poly &x) {
+        return cos(x, x.size());
+    }
+    static Poly cos(const Poly &x, int n) {
+        static i64 i = 86583718;
+        return (exp(x * i, n) + exp(x * (mod - i), n)) * ((mod + 1) / 2);
+    }
+
+    static Poly tan(const Poly &x) {
+        return tan(x, x.size());
+    }
+    static Poly tan(const Poly &x, int n) {
+        static i64 i = 86583718;
+        Poly a = exp(x * i, n);
+        Poly b = exp(x * (mod - i), n);
+        return (a - b) * ::inv(2 * i) * inv((a + b) * ((mod + 1) / 2), n) % n;
+    }
+
+    static Poly arcsin(const Poly &x) {
+        return arcsin(x, x.size());
+    }
+    static Poly arcsin(const Poly &x, int n) {
+        return integr(deriv(x) * inv(sqrt(Poly{1} - x * x % n, n), n) % n) % n;
+    }
+
+    static Poly arccos(const Poly &x) {
+        return arccos(x, x.size());
+    }
+    static Poly arccos(const Poly &x, int n) {
+        return Poly{0} - arcsin(x, n);
+    }
+
+    static Poly arctan(const Poly &x) {
+        return arctan(x, x.size());
+    }
+    static Poly arctan(const Poly &x, int n) {
+        return integr(deriv(x) * inv(Poly{1} + x * x % n, n) % n) % n;
+    }
+
     static Poly deriv(const Poly &x) {
-        if (!x.size()) {
+        if (x.empty()) {
             return Poly();
         }
-        std::vector<i64> res(x.size() - 1);
+        Poly res(x.size() - 1);
         for (int i = 0; i < x.size() - 1; i++) {
             res[i] = (i + 1) * x[i + 1] % mod;
         }
-        return Poly(res);
+        return res;
     }
-    // 积分
+
     static Poly integr(const Poly &x) {
-        if (!x.size()) {
-            return Poly();
+        static vector<i64> inv{1, 1};
+        int m = inv.size();
+        int n = x.size();
+        if (m <= n) {
+            inv.resize(2 * n);
+            for (int i = m; i < 2 * n; i++) {
+                inv[i] = (mod - mod / i) * inv[mod % i] % mod;
+            }
         }
-        std::vector<i64> res(x.size() + 1);
-        for (int i = 0; i < x.size(); i++) {
-            res[i + 1] = x[i] * ::inv(i + 1) % mod;
+        Poly res(n + 1);
+        for (int i = 0; i < n; i++) {
+            res[i + 1] = x[i] * inv[i + 1] % mod;
         }
-        return Poly(res);
+        return res;
     }
 
-    static Poly mulxk(Poly x, int k) {
-        x.v.insert(x.v.begin(), k, 0);
-        return x;
-    }
-    static Poly modxk(Poly x, int k) {
-        x.v.resize(min(k, x.size()));
-        return x;
-    }
-    static Poly divxk(Poly x, int k) {
-        if (x.size() <= k) {
-            return Poly();
-        }
-        x.v.erase(x.v.begin(), x.v.begin() + k);
-        return x;
-    }
     static Poly rev(Poly x) {
-        reverse(x.v.begin(), x.v.end());
-        return Poly(x);
-    }
-
-    static vector<i64> multiply(const vector<i64> &A, const vector<i64> &B) {
-        int n = bit_ceil(A.size() + B.size() - 1);
-        vector<i64> va(A.begin(), A.end());
-        vector<i64> vb(B.begin(), B.end());
-        va.resize(n), vb.resize(n);
-        NTT(va), NTT(vb);
-        for (int i = 0; i < n; ++i) {
-            va[i] = va[i] * vb[i] % mod;
-        }
-        NTT(va, -1);
-        i64 invn = ::inv(n);
-        va.resize(A.size() + B.size() - 1);
-        for (auto &x : va) {
-            x = x * invn % mod;
-        }
-        return va;
+        ranges::reverse(x);
+        return x;
     }
 
     static void NTT(vector<i64> &A, int opt = 1) {
         int n = A.size();
-        std::vector<int> p(n);
-        for (int i = 0; i < n; ++i) {
-            p[i] = p[i / 2] / 2 + (n / 2) * (i & 1);
-        }
-        for (int i = 0; i < n; ++i) {
-            if (i < p[i]) {
-                std::swap(A[i], A[p[i]]);
+        init(n);
+        for (int i = 0, j = 0; i < n; i++) {
+            if (i > j) {
+                std::swap(A[i], A[j]);
             }
+            for (int k = n >> 1; (j ^= k) < k; k >>= 1);
         }
-        for (int len = 2; len <= n; len <<= 1) {
-            i64 g1 = ::qpow(opt == 1 ? G : INVG, (mod - 1) / len);
-            for (int i = 0; i < n; i += len) {
-                i64 gk = 1;
-                for (int j = 0; j < len / 2; ++j) {
-                    i64 x = A[i + j];
-                    i64 y = A[i + j + len / 2] * gk % mod;
-                    A[i + j] = (x + y) % mod;
-                    A[i + j + len / 2] = (x - y + mod) % mod;
-                    gk = (gk * g1) % mod;
+        for (int i = 1; i < n; i <<= 1) {
+            for (int j = 0; j < n; j += (i << 1)) {
+                for (int k = j; k < i + j; k++) {
+                    int t = w[k + i - j] * A[i + k] % mod;
+                    A[k + i] = (A[k] - t < 0 ? A[k] - t + mod : A[k] - t);
+                    A[k] = (A[k] + t >= mod ? A[k] + t - mod : A[k] + t);
                 }
             }
+        }
+        if (opt == -1) {
+            reverse(A.begin() + 1, A.end());
+        }
+    }
+    static void init(int n) {
+        int m = w.size();
+        if (n <= m) return;
+        w.resize(n);
+        i64 wn = ::qpow(G, (mod - 1) / n);
+        w[n >> 1] = 1;
+        for (int i = (n >> 1) + 1; i < n; i++) {
+            w[i] = w[i - 1] * wn % mod;
+        }
+        for (int i = n - 1; i >= m; i--) {
+            w[i >> 1] = w[i];
         }
     }
 };
@@ -235,20 +277,14 @@ int main() {
     ios::sync_with_stdio(false);
     cin.tie(0), cout.tie(0);
     int n;
-    std::cin >> n;
-    string s;
-    cin >> s;
-    i64 k = 0;
-    for (int i = 0; i < s.size(); i++) {
-        k = (k * 10 + s[i] - '0') % mod;
+    cin >> n;
+    Poly F(n);
+    for (int i = 1; i < n; i++) {
+        cin >> F[i];
     }
-    vector<i64> a(n);
-    for (int i = 0; i < n; ++i) {
-        std::cin >> a[i];
-    }
-    auto q = Poly::qpow(Poly(a), k);
-    for (int i = 0; i < q.size(); ++i) {
-        std::cout << q[i] << " \n"[i + 1 == q.size()];
+    F = Poly::inv(Poly{1} - F);
+    for (int i = 0; i < n; i++) {
+        cout << F[i] << " \n"[i + 1 == n];
     }
     return 0;
 }

@@ -8,29 +8,10 @@ using i128 = __int128_t;
 using u128 = __uint128_t;
 
 constexpr i64 mod = 998244353;
-constexpr i64 G = 3;
-constexpr i64 INVG = 332748118;
 
-i64 qpow(i64 a, i64 b) {
-    i64 res = 1;
-    while (b) {
-        if (b & 1) {
-            res = res * a % mod;
-        }
-        b >>= 1;
-        a = a * a % mod;
-    }
-    return res;
-}
-
-i64 inv(i64 a) {
-    return qpow(a, mod - 2);
-}
-
-void FWT_OR(std::vector<i64> &A, int opt = 1) {
-    int n = A.size();
-    for (int i = 1; i < (1 << n); i *= 2) {
-        for (int j = 0; j < (1 << n); j += 2 * i) {
+void FWT_OR(std::vector<i64> &A, int opt) {
+    for (int i = 1; i < A.size(); i <<= 1) {
+        for (int j = 0; j < A.size(); j += (i << 1)) {
             for (int k = 0; k < i; k++) {
                 A[i + j + k] = (A[i + j + k] + opt * A[j + k] + mod) % mod;
             }
@@ -38,10 +19,9 @@ void FWT_OR(std::vector<i64> &A, int opt = 1) {
     }
 }
 
-void FWT_AND(std::vector<i64> &A, int opt = 1) {
-    int n = A.size();
-    for (int i = 1; i < (1 << n); i *= 2) {
-        for (int j = 0; j < (1 << n); j += 2 * i) {
+void FWT_AND(std::vector<i64> &A, int opt) {
+    for (int i = 1; i < A.size(); i <<= 1) {
+        for (int j = 0; j < A.size(); j += (i << 1)) {
             for (int k = 0; k < i; k++) {
                 A[j + k] = (A[j + k] + opt * A[i + j + k] + mod) % mod;
             }
@@ -49,11 +29,10 @@ void FWT_AND(std::vector<i64> &A, int opt = 1) {
     }
 }
 
-void FWT_XOR(std::vector<i64> &A, int opt = 1) {
-    int n = A.size();
-    static i64 inv2 = inv(2);
-    for (int i = 1; i < n; i <<= 1) {
-        for (int j = 0; j < n; j += 2 * i) {
+void FWT_XOR(std::vector<i64> &A, int opt) {
+    static i64 inv2 = (mod + 1) / 2;
+    for (int i = 1; i < A.size(); i <<= 1) {
+        for (int j = 0; j < A.size(); j += (i << 1)) {
             for (int k = 0; k < i; k++) {
                 i64 x = A[j + k], y = A[i + j + k];
                 A[j + k] = (opt == 1 ? 1 : inv2) * (x + y) % mod;
@@ -62,16 +41,39 @@ void FWT_XOR(std::vector<i64> &A, int opt = 1) {
         }
     }
 }
-
+template<typename Func>
+vector<i64> multiply(vector<i64> A, vector<i64> B, Func dft) {
+    dft(A, 1), dft(B, 1);
+    for (int i = 0; i < A.size(); i++) {
+        A[i] = A[i] * B[i] % mod;
+    }
+    dft(A, -1);
+    return A;
+}
 
 int main() {
     std::ios::sync_with_stdio(false);
     std::cin.tie(nullptr);
     int n;
     std::cin >> n;
-    std::vector<i64> a(n + 1);
-    for (int i = 0; i <= n; ++i) {
+    std::vector<i64> a(1 << n), b(1 << n);
+    for (int i = 0; i < (1 << n); ++i) {
         std::cin >> a[i];
+    }
+    for (int i = 0; i < (1 << n); ++i) {
+        std::cin >> b[i];
+    }
+    auto c = multiply(a, b, FWT_OR);
+    auto d = multiply(a, b, FWT_AND);
+    auto e = multiply(a, b, FWT_XOR);
+    for (int i = 0; i < (1 << n); ++i) {
+        cout << c[i] << " \n"[i + 1 == (1 << n)];
+    }
+    for (int i = 0; i < (1 << n); ++i) {
+        cout << d[i] << " \n"[i + 1 == (1 << n)];
+    }
+    for (int i = 0; i < (1 << n); ++i) {
+        cout << e[i] << " \n"[i + 1 == (1 << n)];
     }
     return 0;
 }
