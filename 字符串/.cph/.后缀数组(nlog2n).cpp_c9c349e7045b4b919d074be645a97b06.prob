@@ -1,1 +1,0 @@
-{"name":"Local: 后缀数组(nlog2n)","url":"c:\\Users\\36157\\Desktop\\cpp\\Algorithms & Data Structures\\字符串\\后缀数组(nlog2n).cpp","tests":[{"id":1754942031560,"input":"00000\n","output":"5 4 3 2 1 "}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"c:\\Users\\36157\\Desktop\\cpp\\Algorithms & Data Structures\\字符串\\后缀数组(nlog2n).cpp","group":"local","local":true}
