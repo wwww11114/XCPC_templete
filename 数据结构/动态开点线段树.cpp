@@ -8,33 +8,28 @@ struct SegmentTree {
         Node *l = nullptr;
         Node *r = nullptr;
         Info info;
-    };
-
+    } *root = nullptr;
     T L, R;
-    Node *root = nullptr;
     
     SegmentTree() = default;
     SegmentTree(T n) : L(0), R(n) {}
     SegmentTree(T L, T R) : L(L), R(R) {}
+
     void pushup(Node *id) {
         id->info = (id->l == nullptr ? Info() : id->l->info) + (id->r == nullptr ? Info() : id->r->info);
     }
     void update(T pos, const Info &val) {
         update(root, L, R, pos, val);
     }
-    Info query(T pos) {
-        return rangeQuery(pos, pos);
-    }
-    Info rangeQuery(T l, T r) {
-        return rangeQuery(root, L, R, l, r);
-    }
     void update(Node *&id, T l, T r, T pos, const Info &val) {
-        if (id == nullptr) id = new Node();
+        if (id == nullptr) {
+            id = new Node();
+        }
         if (l == r) {
             id->info = val;
             return;
         }
-        T mid = (l + r - 1) / 2;
+        T mid = l + r >> 1;
         if (pos <= mid) {
             update(id->l, l, mid, pos, val);
         } else {
@@ -42,12 +37,21 @@ struct SegmentTree {
         }
         pushup(id);
     }
+
+    Info query(T pos) {
+        return rangeQuery(pos, pos);
+    }
+    Info rangeQuery(T l, T r) {
+        return rangeQuery(root, L, R, l, r);
+    }
     Info rangeQuery(Node *&id, T l, T r, T x, T y) {
-        if (y < l || x > r || id == nullptr) return Info();
+        if (y < l || x > r || id == nullptr) {
+            return Info();
+        }
         if (x <= l && r <= y) {
             return id->info;
         }
-        T mid = (l + r - 1) / 2;
+        T mid = l + r >> 1;
         return rangeQuery(id->l, l, mid, x, y) + rangeQuery(id->r, mid + 1, r, x, y);
     }
 
@@ -55,13 +59,17 @@ struct SegmentTree {
         root = merge(root, seg.root, L, R);
     }
     Node *merge(Node *&xid, Node *&yid, T l, T r) {
-        if (xid == nullptr) return yid;
-        if (yid == nullptr) return xid;
-        if (l == r) {
-            xid->info = (xid->info ^ yid->info);
+        if (xid == nullptr) {
+            return yid;
+        }
+        if (yid == nullptr) {
             return xid;
         }
-        T mid = (l + r - 1) / 2;
+        if (l == r) {
+            xid->info = (xid->info + yid->info);
+            return xid;
+        }
+        T mid = l + r >> 1;
         xid->l = merge(xid->l, yid->l, l, mid);
         xid->r = merge(xid->r, yid->r, mid + 1, r);
         pushup(xid);
@@ -80,13 +88,15 @@ struct SegmentTree {
         return seg;
     }
     Node *split(Node *&id, T l, T r, T k) {
-        if (id == nullptr || l == r || k >= r) return nullptr;
+        if (id == nullptr || l == r || k >= r) {
+            return nullptr;
+        }
         Node *nid = new Node();
         if (k < l) {
             std::swap(nid, id);
             return nid;
         }
-        T mid = (l + r - 1) / 2;
+        T mid = l + r >> 1;
         if (k > mid) {
             nid->r = split(id->r, mid + 1, r, k);
         } else {
@@ -97,13 +107,18 @@ struct SegmentTree {
         pushup(nid);
         return nid;
     }
+    
     T queryk(T k) { //非通用函数
         return queryk(root, L, R, k);
     }
     T queryk(Node *id, T l, T r, T k) {
-        if (id == nullptr || id->info.sum < k) return -1;
-        if (l == r) return l;
-        int mid = (l + r - 1) / 2;
+        if (id == nullptr || id->info.sum < k) {
+            return -1;
+        }
+        if (l == r) {
+            return l;
+        }
+        T mid = l + r >> 1;
         if (id->l != nullptr && id->l->info.sum >= k) {
             return queryk(id->l, l, mid, k);
         } else if (id->r != nullptr) {
@@ -133,11 +148,3 @@ Info operator+(const Info &x, const Info &y) {
     return res;
 }
 
-Info operator^(const Info &x, const Info &y) {
-    Info res;
-    res.mn = std::min(x.mn, y.mn);
-    res.mx = std::max(x.mx, y.mx);
-    res.sum = x.sum + y.sum;
-    res.len = x.len + y.len;
-    return res;
-}

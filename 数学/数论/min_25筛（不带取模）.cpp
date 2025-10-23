@@ -32,10 +32,9 @@ i64 min25_sieve(i64 n) {
     pre(sqn);
     // 预处理下标
     vector<i64> v;
-    for (i64 i = 1; i <= n; i = n / (n / i) + 1) {
+    for (i64 i = n; i >= 1; i = n / (n / i + 1)) {
         v.push_back(n / i);
     }
-    reverse(v.begin(), v.end());
     vector<int> id1(sqn + 1), id2(sqn + 1);
     for (int i = 0; i < v.size(); i++) {
         if (v[i] <= sqn) {

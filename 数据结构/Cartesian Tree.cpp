@@ -15,11 +15,7 @@ struct Cart_Tree {
                 ls[i] = st.top();
                 st.pop();
             }
-            if (!st.empty()) {
-                rs[st.top()] = i;
-            } else {
-                root = i;
-            }
+            (st.empty() ? root : rs[st.top()]) = i;
             st.push(i);
         }
     }
@@ -29,8 +25,12 @@ struct Cart_Tree {
     }
     void dfs(int u) {
         cout << u << ' ';
-        if (ls[u]) dfs(ls[u]);
-        if (rs[u]) dfs(rs[u]);
+        if (ls[u]) {
+            dfs(ls[u]);
+        }
+        if (rs[u]) {
+            dfs(rs[u]);
+        }
         return;
     }
 };

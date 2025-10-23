@@ -88,7 +88,7 @@ struct Matrix {
                     continue;
                 }
                 i64 delat = v[j][i] * invP % mod;
-                for (int k = 0; k < m; k++) {
+                for (int k = i; k < m; k++) {
                     v[j][k] = (v[j][k] - delat * v[i][k] % mod + mod) % mod;
                 }
             }

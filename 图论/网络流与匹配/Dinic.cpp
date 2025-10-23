@@ -5,40 +5,44 @@ typedef long long i64;
 template <typename T>
 struct Dinic {
     constexpr static T INF = numeric_limits<T>::max();
-    vector<vector<pair<int, int>>> gra;
-    vector<T> edg;
+    vector<vector<int>> gra;
+    vector<tuple<int, T>> edg;
     vector<int> dep, cur;
+    T Maxflow;
     int n, s, t;
 
     Dinic() = default;
     Dinic(int n) : n(n), gra(n + 1) {}
 
-    void add_edge(int u, int v, T w) {
-        gra[u].emplace_back(v, edg.size());
-        edg.push_back(w);
-        gra[v].emplace_back(u, edg.size());
-        edg.push_back(0);
+    void add_edge(int u, int v, T cap) {
+        gra[u].push_back(edg.size());
+        edg.emplace_back(v, cap);
+        gra[v].push_back(edg.size());
+        edg.emplace_back(u, 0);
     }
     T work(int s, int t) {
         this->s = s, this->t = t;
-        T ans = 0;
+        Maxflow = 0;
         while (bfs()) {
             cur.assign(n + 1, 0);
-            ans += dfs(s, INF);
+            Maxflow += dfs(s, INF);
         }
-        return ans;
+        return Maxflow;
     }
 
     bool bfs() {
         dep.assign(n + 1, 0);
-        dep[s] = 1;
+
         queue<int> q;
+        dep[s] = 1;
         q.push(s);
+
         while (!q.empty()) {
             int u = q.front();
             q.pop();
-            for (const auto &[v, id] : gra[u]) {
-                if (edg[id] && !dep[v]) {
+            for (auto id : gra[u]) {
+                auto &[v, cap] = edg[id];
+                if (cap && !dep[v]) {
                     dep[v] = dep[u] + 1;
                     q.push(v);
                 }
@@ -52,18 +56,19 @@ struct Dinic {
             return flow;
         }
         T res = flow;
-        while (cur[u] < gra[u].size()) {
-            const auto &[v, id] = gra[u][cur[u]];
-            if (edg[id] && dep[v] == dep[u] + 1) {
-                T k = dfs(v, min(res, edg[id]));
-                edg[id] -= k;
-                edg[id ^ 1] += k;
+        for (int &i = cur[u]; i < gra[u].size(); i++) {
+            int id = gra[u][i];
+            auto &[v, cap] = edg[id];
+            auto &[nv, ncap] = edg[id ^ 1];
+            if (cap && dep[v] == dep[u] + 1) {
+                T k = dfs(v, min(res, cap));
+                cap -= k;
+                ncap += k;
                 res -= k;
                 if (!res) {
-                    return flow;
+                    break;
                 }
             }
-            cur[u]++;
         }
         return flow - res;
     }

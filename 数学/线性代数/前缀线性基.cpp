@@ -102,7 +102,6 @@ struct Basis {
     }
 };
 
-
 template <typename T, int B = numeric_limits<T>::digits>
 struct PreBasis {
     array<pair<T, int>, B> Base{};
@@ -136,6 +135,6 @@ struct PreBasis {
         return res;
     }
 };
-int main () {
+int main() {
     return 0;
 }

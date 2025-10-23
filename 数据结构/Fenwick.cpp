@@ -24,11 +24,21 @@ struct Fenwick {
             }
         }
     }
-    void update(int p, T x) { return add(p, x - query(p)); }
-    void add(int p, T x) { return rangeAdd(p, p, x); };
-    void rangeAdd(int l, int r, T x) { modify(l, x), modify(r + 1, -x); }
-    T query(int p) { return rangeQuery(p, p); }
-    T rangeQuery(int l, int r) { return ask(r) - ask(l - 1); }
+    void update(int p, T x) {
+        return add(p, x - query(p));
+    }
+    void add(int p, T x) {
+        return rangeAdd(p, p, x);
+    };
+    void rangeAdd(int l, int r, T x) {
+        modify(l, x), modify(r + 1, -x);
+    }
+    T query(int p) {
+        return rangeQuery(p, p);
+    }
+    T rangeQuery(int l, int r) {
+        return ask(r) - ask(l - 1);
+    }
 private:
     void modify(int p, T x) {
         p++;
@@ -46,40 +56,44 @@ private:
         return res;
     }
 };
-// // 单点修改，区间查询
-// template <typename T>
-// struct Fenwick {
-//     int n;
-//     vector<T> sum;
+// 单点修改，区间查询
+template <typename T>
+struct Fenwick {
+    int n;
+    vector<T> sum;
 
-//     Fenwick() = default;
-//     Fenwick(int n) : n(n + 1), sum(n + 2) {}
-//     Fenwick(const vector<T> &v) : n(v.size()), sum(n + 1) {
-//         for (int i = 1; i <= n; i++) {
-//             sum[i] += v[i - 1];
-//             int j = i + (i & -i);
-//             if (j <= n) {
-//                 sum[j] += sum[i];
-//             }
-//         }
-//     }
-//     void add(int p, T x) { // 给位置p增加x
-//         p++;
-//         for (; p <= n; p += p & -p) {
-//             sum[p] += x;
-//         }
-//     }
-//     T ask(int p) { // 求位置p的前缀和
-//         p++;
-//         T res{};
-//         for (; p; p -= p & -p) {
-//             res += sum[p];
-//         }
-//         return res;
-//     }
-//     T query(int p) { return rangeQuery(p, p); }
-//     T rangeQuery(int l, int r) { return ask(r) - ask(l - 1); }
-// };
+    Fenwick() = default;
+    Fenwick(int n) : n(n + 1), sum(n + 2) {}
+    Fenwick(const vector<T> &v) : n(v.size()), sum(n + 1) {
+        for (int i = 1; i <= n; i++) {
+            sum[i] += v[i - 1];
+            int j = i + (i & -i);
+            if (j <= n) {
+                sum[j] += sum[i];
+            }
+        }
+    }
+    void add(int p, T x) {
+        p++;
+        for (; p <= n; p += p & -p) {
+            sum[p] += x;
+        }
+    }
+    T ask(int p) {
+        p++;
+        T res{};
+        for (; p; p -= p & -p) {
+            res += sum[p];
+        }
+        return res;
+    }
+    T query(int p) {
+        return rangeQuery(p, p);
+    }
+    T rangeQuery(int l, int r) {
+        return ask(r) - ask(l - 1);
+    }
+};
 
 int main() {
     ios::sync_with_stdio(false);

@@ -1,8 +1,9 @@
 #include <bits/stdc++.h>
 using namespace std;
 typedef long long i64;
+// 流量大, 费用范围小的图, 增广路径短的图 (二分图)
 template <typename T>
-struct SSP {
+struct ZKW {
     constexpr static T INF = numeric_limits<T>::max();
     vector<vector<int>> gra;
     vector<tuple<int, T, T>> edg;
@@ -12,9 +13,9 @@ struct SSP {
     T Maxflow, Mincost;
     int n, s, t;
 
-    SSP() = default;
+    ZKW() = default;
 
-    SSP(int n) : n(n), gra(n + 1) {}
+    ZKW(int n) : n(n), gra(n + 1) {}
 
     void add_edge(int u, int v, T cap, T cost) {
         gra[u].push_back(edg.size());
@@ -27,9 +28,11 @@ struct SSP {
         this->s = s, this->t = t;
         Maxflow = Mincost = 0;
         while (spfa()) {
-            cur.assign(n + 1, 0);
-            vis.assign(n + 1, 0);
-            Maxflow += dfs(s);
+            do {
+                vis.assign(n + 1, 0);
+                cur.assign(n + 1, 0);
+                Maxflow += dfs(s);
+            } while (vis[t]);
         }
         return make_pair(Maxflow, Mincost);
     }
@@ -39,18 +42,19 @@ struct SSP {
         vis.assign(n + 1, 0);
 
         deque<int> q;
-        dis[s] = 0;
-        vis[s] = 1;
-        q.push_back(s);
-
+        dis[t] = 0;
+        vis[t] = 1;
+        q.push_back(t);
+        
         while (!q.empty()) {
             int u = q.front();
             q.pop_front();
             vis[u] = 0;
             for (auto id : gra[u]) {
                 auto &[v, cap, cost] = edg[id];
-                if (cap && dis[v] > dis[u] + cost) {
-                    dis[v] = dis[u] + cost;
+                auto &[nv, ncap, ncost] = edg[id ^ 1];
+                if (ncap && dis[v] > dis[u] - cost) {
+                    dis[v] = dis[u] - cost;
                     if (!vis[v]) {
                         vis[v] = 1;
                         if (!q.empty() && dis[v] < dis[q.front()]) {
@@ -62,7 +66,7 @@ struct SSP {
                 }
             }
         }
-        return dis[t] != INF;
+        return dis[s] != INF;
     }
 
     T dfs(int u, T flow = INF) {
@@ -75,7 +79,7 @@ struct SSP {
             int id = gra[u][i];
             auto &[v, cap, cost] = edg[id];
             auto &[nv, ncap, ncost] = edg[id ^ 1];
-            if (!vis[v] && cap && dis[v] == dis[u] + cost) {
+            if (!vis[v] && cap && dis[u] == dis[v] + cost) {
                 T k = dfs(v, min(res, cap));
                 cap -= k;
                 ncap += k;
@@ -91,11 +95,11 @@ struct SSP {
 };
 
 void solve() {
-    int n, m, s, t;
+    i64 n, m, s, t;
     cin >> n >> m >> s >> t;
-    SSP<int> ssp(n);
-    for (int i = 1; i <= m; i++) {
-        int u, v, w, c;
+    ZKW<int> ssp(n);
+    for (i64 i = 1; i <= m; i++) {
+        i64 u, v, w, c;
         cin >> u >> v >> w >> c;
         ssp.add_edge(u, v, w, c);
     }

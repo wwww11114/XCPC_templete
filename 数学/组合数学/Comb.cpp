@@ -43,10 +43,16 @@ struct Comb {
         return _invfac[m];
     }
     i64 operator()(int n, int m) {
-        if (m < 0 || n < 0 || n < m) {
+        if (m < 0 || n < m) {
             return 0;
         }
         return fac(n) * invfac(m) % mod * invfac(n - m) % mod;
+    }
+    i64 Lucas(i64 n, i64 m) {
+        if (m == 0) {
+            return 1;
+        }
+        return (*this)(n % mod, m % mod) * Lucas(n / mod, m / mod) % mod;
     }
 } comb;
 int main() {
