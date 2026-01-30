@@ -53,7 +53,7 @@ void NTT(vector<i64> &A, int opt = 1) {
     }
 }
 
-vector<i64> multiply(vector<i64> A, vector<i64> B) {
+vector<i64> operator*(vector<i64> A, vector<i64> B) {
     auto m = A.size() + B.size() - 1;
     int n = bit_ceil(m);
     A.resize(n), B.resize(n);
