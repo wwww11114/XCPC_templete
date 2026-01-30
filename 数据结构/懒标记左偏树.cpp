@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
-typedef long long i64;
 using namespace std;
+using i64 = long long;
+
 template <typename Info, typename Tag, typename _Compare = less<Info>>
 struct Leftist_Tree {
     struct Node {

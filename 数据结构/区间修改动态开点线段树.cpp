@@ -1,11 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
-using u32 = uint32_t;
-using i64 = int64_t;
-using u64 = uint64_t;
-using f64 = long double;
-using i128 = __int128_t;
-using u128 = __uint128_t;
+using i64 = long long;
+
 template<typename Info, typename Tag, typename T = i64>
 struct SegmentTree {
     struct Node {
@@ -115,18 +111,35 @@ struct SegmentTree {
         return xid;
     }
 };
+constexpr i64 INF = 1E18;
 
-void solve() {
-
-    return;
-}
-int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(0), cout.tie(0);
-    int T = 1;
-    // cin >> T;
-    while (T--) {
-        solve();
+struct Tag {
+    i64 add = 0;
+    Tag(i64 x = 0) : add(x) {}
+    void apply(const Tag &dx) {
+        add += dx.add;
     }
-    return 0;
+};
+
+struct Info {
+    i64 mn = INF;
+    i64 mx = -INF;
+    i64 sum = 0;
+    i64 len = 0;
+    Info() = default;
+    Info(i64 x) : mn(x), mx(x), sum(x), len(1) {}
+
+};
+
+Info operator+(const Info &x, const Info &y) {
+    Info res;
+    res.mn = min(x.mn, y.mn);
+    res.mx = max(x.mx, y.mx);
+    res.sum = x.sum + y.sum;
+    res.len = x.len + y.len;
+    return res;
+}
+
+int main() {
+
 }

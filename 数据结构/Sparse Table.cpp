@@ -1,17 +1,18 @@
 #include <bits/stdc++.h>
+using namespace std;
 using i64 = long long;
 
-template <typename T, typename Func = std::function<T(const T &, const T &)>>
+template <typename T, typename Func = function<T(const T &, const T &)>>
 struct ST {
-    std::vector<std::vector<T>> st;
+    vector<vector<T>> st;
     Func func;
     
     ST() = default;
-    ST(const std::vector<T> &v, Func func = [](const T &a, const T &b) {
-        return std::max(a, b);
-    }) : func(std::move(func)) {
-        int k = std::bit_width<unsigned>(v.size());
-        st.resize(k + 1, std::vector<T>(v.size()));
+    ST(const vector<T> &v, Func func = [](const T &a, const T &b) {
+        return max(a, b);
+    }) : func(move(func)) {
+        int k = bit_width<unsigned>(v.size());
+        st.resize(k + 1, vector<T>(v.size()));
         st[0] = v;
         for (int i = 0; i < k; ++i) {
             for (int j = 0; j + (1 << (i + 1)) - 1 < v.size(); ++j) {
@@ -20,7 +21,7 @@ struct ST {
         }
     }
     T range(int l, int r) {
-        int t = std::__lg(r - l + 1);
+        int t = __lg(r - l + 1);
         return func(st[t][l], st[t][r + 1 - (1 << t)]);
     }
 };
@@ -28,19 +29,19 @@ struct ST {
 //ST表(sparseTable)
 //https://www.luogu.com.cn/problem/P3865
 int main() {
-    std::ios::sync_with_stdio(false);
-    std::cin.tie(nullptr);
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
     int n, q;
-    std::cin >> n >> q;
-    std::vector<int> v(n + 1);
+    cin >> n >> q;
+    vector<int> v(n + 1);
     for (int i = 1; i <= n; ++i) {
-        std::cin >> v[i];
+        cin >> v[i];
     }
     ST<int> st(v);
     while (q--) {
         int l, r;
-        std::cin >> l >> r;
-        std::cout << st.range(l, r) << '\n';
+        cin >> l >> r;
+        cout << st.range(l, r) << '\n';
     }
     return 0;
 }

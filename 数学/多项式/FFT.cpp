@@ -35,23 +35,23 @@ void FFT(vector<complex<double>> &A, int opt = 1) {
 
 
 template<typename T>
-vector<T> multiply(const vector<T> &A, const vector<T> &B) {
+vector<T> operator*(const vector<T> &A, const vector<T> &B) {
     int n = bit_ceil(A.size() + B.size() - 1);
-    vector<complex<double>> v(n);
+    vector<complex<double>> va(n), vb(n);
     for (int i = 0; i < A.size(); i++) {
-        v[i].real(A[i]);
+        va[i].real(A[i]);
     }
     for (int i = 0; i < B.size(); i++) {
-        v[i].imag(B[i]);
+        vb[i].imag(B[i]);
     }
-    FFT(v);
-    for (auto &x : v) {
-        x *= x;
+    FFT(va), FFT(vb);
+    for (int i = 0; i < n; i++) {
+        va[i] *= vb[i];
     }
-    FFT(v, -1);
-    std::vector<T> res(A.size() + B.size() - 1);
+    FFT(va, -1);
+    vector<T> res(A.size() + B.size() - 1);
     for (int i = 0; i < res.size(); ++i) {
-        res[i] = (T)round(v[i].imag() / 2 / n);
+        res[i] = (T)round(va[i].imag() / n);
     }
     return res;
 }
@@ -68,7 +68,7 @@ int main() {
     for (int i = 0; i <= m; ++i) {
         std::cin >> b[i];
     }
-    auto c = multiply(a, b);
+    auto c = a * b;
     for (int i = 0; i < c.size(); ++i) {
         std::cout << c[i] << " \n"[i + 1 == c.size()];
     }

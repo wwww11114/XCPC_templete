@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
-typedef long long i64;
+using i64 = long long;
+
 struct DSU {
     vector<int> p, sz;
     DSU() = default;

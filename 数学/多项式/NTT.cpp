@@ -27,15 +27,15 @@ i64 inv(i64 a) {
     return qpow(a, mod - 2);
 }
 
-void NTT(std::vector<i64> &A, int opt = 1) {
+void NTT(vector<i64> &A, int opt = 1) {
     int n = A.size();
-    std::vector<int> p(n);
+    vector<int> p(n);
     for (int i = 0; i < n; ++i) {
         p[i] = p[i / 2] / 2 + (n / 2) * (i & 1);
     }
     for (int i = 0; i < n; ++i) {
         if (i < p[i]) {
-            std::swap(A[i], A[p[i]]);
+            swap(A[i], A[p[i]]);
         }
     }
     for (int len = 2; len <= n; len <<= 1) {
@@ -71,13 +71,13 @@ vector<i64> multiply(vector<i64> A, vector<i64> B) {
 }
 
 int main() {
-    std::ios::sync_with_stdio(false);
-    std::cin.tie(nullptr);
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
     int n;
-    std::cin >> n;
-    std::vector<i64> a(n + 1);
+    cin >> n;
+    vector<i64> a(n + 1);
     for (int i = 0; i <= n; ++i) {
-        std::cin >> a[i];
+        cin >> a[i];
     }
     return 0;
 }

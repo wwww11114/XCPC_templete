@@ -20,7 +20,7 @@ struct RDSU {
         return x;
     }
     void rollback(int cur) {
-        while (his.size() > cur) {
+        while ((int)his.size() > cur) {
             auto [x, y] = his.top();
             his.pop();
             x = y;
@@ -48,7 +48,7 @@ struct RDSU {
 struct SegmentTree {
     int n;
     RDSU dsu;
-    std::vector<vector<pair<int, int>>> info;
+    vector<vector<pair<int, int>>> info;
 #define ls (id << 1)
 #define rs (id << 1 | 1)
     SegmentTree(int n, int m) : n(m), info(m << 2), dsu(n) {}

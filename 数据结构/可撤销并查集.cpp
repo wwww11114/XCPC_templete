@@ -1,5 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
+using i64 = long long;
+
 struct RDSU {
     vector<int> p, sz;
     stack<pair<int &, int>> his;
@@ -19,7 +21,7 @@ struct RDSU {
         return x;
     }
     void rollback(int cur) {
-        while (his.size() > cur) {
+        while ((int)his.size() > cur) {
             auto [x, y] = his.top();
             his.pop();
             x = y;

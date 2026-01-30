@@ -28,7 +28,7 @@ struct Comb {
         for (int i = n + 1; i <= m; i++) {
             _fac[i] = _fac[i - 1] * i % mod;
         }
-        _invfac[m] = inv(_fac[m]);
+        _invfac[m] = ::inv(_fac[m]);
         for (int i = m; i > n; i--) {
             _invfac[i - 1] = _invfac[i] * i % mod;
         }
@@ -41,6 +41,9 @@ struct Comb {
     i64 invfac(int m) {
         if (m > n) init(2 * m);
         return _invfac[m];
+    }
+    i64 inv(int m) {
+        return invfac(m) * invfac(m - 1) % mod;
     }
     i64 operator()(int n, int m) {
         if (m < 0 || n < m) {

@@ -26,8 +26,8 @@ i64 inv(i64 a) {
     return qpow(a, mod - 2);
 }
 
-struct Poly : std::vector<i64> {
-    using std::vector<i64>::vector;
+struct Poly : vector<i64> {
+    using vector<i64>::vector;
     inline static vector<i64> w{1};
 
     friend Poly operator+(Poly res, const i64 &y) {
@@ -57,7 +57,7 @@ struct Poly : std::vector<i64> {
         return x;
     }
     static Poly divxk(Poly x, int k) {
-        if (x.size() <= k) {
+        if ((int)x.size() <= k) {
             return Poly();
         }
         x.erase(x.begin(), x.begin() + k);
@@ -66,7 +66,7 @@ struct Poly : std::vector<i64> {
 
     friend Poly operator+(Poly res, const Poly &y) {
         res.resize(max(res.size(), y.size()));
-        for (int i = 0; i < y.size(); i++) {
+        for (int i = 0; i < (int)y.size(); i++) {
             res[i] = res[i] + y[i] >= mod ? res[i] + y[i] - mod : res[i] + y[i];
         }
         return res;
@@ -117,7 +117,7 @@ struct Poly : std::vector<i64> {
     }
     static Poly pow(const Poly &a, i64 b, int n) {
         int id = 0;
-        while (id < a.size() && !a[id]) {
+        while (id < (int)a.size() && !a[id]) {
             id++;
         }
         if (id * b >= n) {
@@ -208,7 +208,7 @@ struct Poly : std::vector<i64> {
             return Poly();
         }
         Poly res(x.size() - 1);
-        for (int i = 0; i < x.size() - 1; i++) {
+        for (int i = 0; i < (int)x.size() - 1; i++) {
             res[i] = (i + 1) * x[i + 1] % mod;
         }
         return res;

@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+using namespace std;
 using i64 = long long;
 
 // 线段树，区间修改，区间查询
@@ -8,13 +9,13 @@ struct SegmentTree {
 #define ls (id << 1)
 #define rs (id << 1 | 1)
     int L, R;
-    std::vector<Info> info;
-    std::vector<Tag> tag;
+    vector<Info> info;
+    vector<Tag> tag;
 
     SegmentTree() = default;
     SegmentTree(int l, int r) : L(l), R(r), info(r - l + 1 << 2), tag(r - l + 1 << 2) {}
     SegmentTree(int n) : SegmentTree(0, n) {} 
-    SegmentTree(const std::vector<Info> &init) : SegmentTree((int)init.size() - 1) {
+    SegmentTree(const vector<Info> &init) : SegmentTree((int)init.size() - 1) {
         auto build = [&](auto self, int id, int l, int r) -> void {
             if (l == r) {
                 info[id] = init[l];
@@ -110,9 +111,12 @@ struct Info {
 
 Info operator+(const Info &x, const Info &y) {
     Info res;
-    res.mn = std::min(x.mn, y.mn);
-    res.mx = std::max(x.mx, y.mx);
+    res.mn = min(x.mn, y.mn);
+    res.mx = max(x.mx, y.mx);
     res.sum = x.sum + y.sum;
     res.len = x.len + y.len;
     return res;
+}
+int main() {
+
 }

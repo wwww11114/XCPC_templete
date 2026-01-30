@@ -1,17 +1,18 @@
 #include <bits/stdc++.h>
-typedef long long i64;
+using namespace std;
+using i64 = long long;
 
 template <typename Info>
 struct SegmentTree {
 #define ls (id << 1)
 #define rs (id << 1 | 1)
     int L, R;
-    std::vector<Info> info;
+    vector<Info> info;
     
     SegmentTree() = default;
     SegmentTree(int l, int r) : L(l), R(r), info(r - l + 1 << 2) {}
     SegmentTree(int n) : SegmentTree(0, n) {}
-    SegmentTree(const std::vector<Info> &init) : SegmentTree((int)init.size() - 1) {
+    SegmentTree(const vector<Info> &init) : SegmentTree((int)init.size() - 1) {
         auto build = [&](auto self, int id, int l, int r) -> void {
             if (l == r) {
                 info[id] = init[l];
@@ -83,9 +84,12 @@ struct Info {
 
 Info operator+(const Info &x, const Info &y) {
     Info res;
-    res.mn = std::min(x.mn, y.mn);
-    res.mx = std::max(x.mx, y.mx);
+    res.mn = min(x.mn, y.mn);
+    res.mx = max(x.mx, y.mx);
     res.sum = x.sum + y.sum;
     res.len = x.len + y.len;
     return res;
+}
+int main() {
+
 }

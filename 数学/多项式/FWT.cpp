@@ -9,7 +9,7 @@ using u128 = __uint128_t;
 
 constexpr i64 mod = 998244353;
 
-void FWT_OR(std::vector<i64> &A, int opt) {
+void FWT_OR(vector<i64> &A, int opt) {
     for (int i = 1; i < A.size(); i <<= 1) {
         for (int j = 0; j < A.size(); j += (i << 1)) {
             for (int k = 0; k < i; k++) {
@@ -19,7 +19,7 @@ void FWT_OR(std::vector<i64> &A, int opt) {
     }
 }
 
-void FWT_AND(std::vector<i64> &A, int opt) {
+void FWT_AND(vector<i64> &A, int opt) {
     for (int i = 1; i < A.size(); i <<= 1) {
         for (int j = 0; j < A.size(); j += (i << 1)) {
             for (int k = 0; k < i; k++) {
@@ -29,7 +29,7 @@ void FWT_AND(std::vector<i64> &A, int opt) {
     }
 }
 
-void FWT_XOR(std::vector<i64> &A, int opt) {
+void FWT_XOR(vector<i64> &A, int opt) {
     static i64 inv2 = (mod + 1) / 2;
     for (int i = 1; i < A.size(); i <<= 1) {
         for (int j = 0; j < A.size(); j += (i << 1)) {
@@ -52,16 +52,16 @@ vector<i64> multiply(vector<i64> A, vector<i64> B, Func dft) {
 }
 
 int main() {
-    std::ios::sync_with_stdio(false);
-    std::cin.tie(nullptr);
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
     int n;
-    std::cin >> n;
-    std::vector<i64> a(1 << n), b(1 << n);
+    cin >> n;
+    vector<i64> a(1 << n), b(1 << n);
     for (int i = 0; i < (1 << n); ++i) {
-        std::cin >> a[i];
+        cin >> a[i];
     }
     for (int i = 0; i < (1 << n); ++i) {
-        std::cin >> b[i];
+        cin >> b[i];
     }
     auto c = multiply(a, b, FWT_OR);
     auto d = multiply(a, b, FWT_AND);

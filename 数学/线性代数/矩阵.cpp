@@ -7,8 +7,8 @@ using f64 = long double;
 using i128 = __int128_t;
 using u128 = __uint128_t;
 
-// constexpr i64 mod = 1e9 + 7;
-i64 mod;
+constexpr i64 mod = 1e9 + 7;
+
 i64 qpow(i64 a, i64 b) {
     i64 res = 1;
     while (b) {

@@ -1,5 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
+using i64 = long long;
+
 struct DSU {
     vector<int> p, sz, f;
     stack<pair<int &, int>> his;
@@ -27,7 +29,7 @@ struct DSU {
         check(y, y + n);
     }
     void rollback(int cur) {
-        while (his.size() > cur) {
+        while ((int)his.size() > cur) {
             auto [x, y] = his.top();
             his.pop();
             x = y;

@@ -57,11 +57,7 @@ struct ZKW {
                     dis[v] = dis[u] - cost;
                     if (!vis[v]) {
                         vis[v] = 1;
-                        if (!q.empty() && dis[v] < dis[q.front()]) {
-                            q.push_front(v);
-                        } else {
-                            q.push_back(v);
-                        }
+                        !q.empty() && dis[v] < dis[q.front()] ? q.push_front(v) : q.push_back(v);
                     }
                 }
             }

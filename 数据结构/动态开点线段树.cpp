@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
+using namespace std;
 using i64 = long long;
-constexpr int MAXN = 2E5;
 
 template<typename Info, typename T = i64>
 struct SegmentTree {
@@ -93,7 +93,7 @@ struct SegmentTree {
         }
         Node *nid = new Node();
         if (k < l) {
-            std::swap(nid, id);
+            swap(nid, id);
             return nid;
         }
         T mid = l + r >> 1;
@@ -101,7 +101,7 @@ struct SegmentTree {
             nid->r = split(id->r, mid + 1, r, k);
         } else {
             nid->l = split(id->l, l, mid, k);
-            std::swap(nid->r, id->r);
+            swap(nid->r, id->r);
         }
         pushup(id);
         pushup(nid);
@@ -141,10 +141,12 @@ struct Info {
 
 Info operator+(const Info &x, const Info &y) {
     Info res;
-    res.mn = std::min(x.mn, y.mn);
-    res.mx = std::max(x.mx, y.mx);
+    res.mn = min(x.mn, y.mn);
+    res.mx = max(x.mx, y.mx);
     res.sum = x.sum + y.sum;
     res.len = x.len + y.len;
     return res;
 }
+int main() {
 
+}

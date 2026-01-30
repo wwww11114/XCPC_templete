@@ -9,7 +9,7 @@ using u128 = __uint128_t;
 
 constexpr i64 mod = 1e9 + 9;
 
-void FWT_OR(std::vector<i64> &A, int opt) {
+void FWT_OR(vector<i64> &A, int opt) {
     for (int i = 1; i < A.size(); i *= 2) {
         for (int j = 0; j < A.size(); j += 2 * i) {
             for (int k = 0; k < i; k++) {
@@ -19,7 +19,7 @@ void FWT_OR(std::vector<i64> &A, int opt) {
     }
 }
 
-vector<i64> SubSetmultiply(const vector<i64> &A, const vector<i64> &B) {
+vector<i64> operator*(const vector<i64> &A, const vector<i64> &B) {
     int m = bit_width(A.size());
     int n = A.size();
     vector a(m + 1, vector<i64>(n));
@@ -27,8 +27,6 @@ vector<i64> SubSetmultiply(const vector<i64> &A, const vector<i64> &B) {
     vector res(m + 1, vector<i64>(n));
     for (int i = 0; i < n; i++) {
         a[popcount<u32>(i)][i] = A[i];
-    }
-    for (int i = 0; i < n; i++) {
         b[popcount<u32>(i)][i] = B[i];
     }
     for (int i = 0; i <= m; i++) {
@@ -64,7 +62,7 @@ int main() {
     for (int i = 0; i < (1 << n); i++) {
         cin >> b[i];
     }
-    auto res = SubSetmultiply(a, b);
+    auto res = a * b;
     for (int i = 0; i < (1 << n); i++) {
         cout << res[i] << " \n"[i + 1 == (1 << n)];
     }

@@ -9,8 +9,8 @@ using u128 = __uint128_t;
 
 template <typename T, int B = numeric_limits<T>::digits>
 struct Basis {
-    array<T, B> Base{};
-    int sz = 0;
+    array<T, B> Base
+        int sz = 0;
 
     bool insert(T x) {
         for (int i = B - 1; i >= 0; i--) {
