@@ -14,7 +14,7 @@ struct ST {
         int k = bit_width<unsigned>(v.size());
         st.resize(k + 1, vector<T>(v.size()));
         st[0] = v;
-        for (int i = 0; i < k; ++i) {
+        for (int i = 0; i < k; i++) {
             for (int j = 0; j + (1 << (i + 1)) - 1 < v.size(); ++j) {
                 st[i + 1][j] = this->func(st[i][j], st[i][j + (1 << i)]);
             }

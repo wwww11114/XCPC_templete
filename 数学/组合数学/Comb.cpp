@@ -43,7 +43,7 @@ struct Comb {
         return _invfac[m];
     }
     i64 inv(int m) {
-        return invfac(m) * invfac(m - 1) % mod;
+        return invfac(m) * fac(m - 1) % mod;
     }
     i64 operator()(int n, int m) {
         if (m < 0 || n < m) {
@@ -63,6 +63,6 @@ int main() {
     cin.tie(0), cout.tie(0);
     int n, k, m;
     cin >> n >> k >> m;
-    cout << comb(n, k) * qpow(m, k) % mod << '\n';
+    cout << comb.fac(10) << '\n';
     return 0;
 }
